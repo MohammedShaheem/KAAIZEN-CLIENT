@@ -1,21 +1,29 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { meRequest } from "../../api/authApi";
-import { setUSer, clearUser, setLoading, setError } from "./authSlice";
+import { meRequest, refreshRequest } from "@/services/auth";
 
-export const refreshSession  =  createAsyncThunk(
-    async (_,{ dispatch }) =>{
-        dispatch(setLoading(true));
-        try{
-             const response = await meRequest();
-             const user = response.data
-             dispatch(setUSer(user));
-             return user;
-        }catch (error) {
-            dispatch(clearUser());
-            dispatch(setError(error.response?.data?.message || error.message || 'Session refresh failed'));
-            throw error;
-        }finally {
-            dispatch(setLoading(false));
+export const refreshSession = createAsyncThunk(
+    'auth/refreshSession',
+    async (_, { rejectWithValue }) => {
+        console.log('Starting refreshSession'); 
+        try {
+            const response = await meRequest();
+            console.log('meRequest succeeded');  
+            return response.data.user;
+        } catch (error) {
+            console.log('meRequest failed:', error.response?.status); 
+            if (error.response?.status === 401) {
+                try {
+                    console.log('Attempting refresh');  
+                    await refreshRequest();
+                    console.log('refresh succeeded, retrying me');  
+                    const meRetry = await meRequest();
+                    return meRetry.data.user;
+                } catch (refreshError) {
+                    console.log('refresh failed:', refreshError.response?.status);  
+                    return rejectWithValue("Session expired");
+                }
+            }
+            return rejectWithValue(error.response?.data?.message || error.message || 'Session refresh failed');
         }
     }
 );

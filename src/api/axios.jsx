@@ -43,9 +43,17 @@ api.interceptors.response.use(
         const originalRequest = error.config;
 
         // handling the error in the waiting queue other than 401
-        if(!error.resonse) return Promise.reject(error);
+        if(!error.response) return Promise.reject(error);
         if(error.response.status !== 401) return Promise.reject(error);
 
+        
+        // For not doing the refresh operation for me request and refresh request
+        if (originalRequest.url?.includes("/api/auth/me") || originalRequest.url?.includes("/api/auth/refresh/")){
+            return Promise.reject(error);
+        }
+
+
+        // for checking whether the 401 comes more than 2
         if(originalRequest._retry) {
             store.dispatch(clearUser());
             return Promise.reject(error);

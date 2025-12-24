@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { refreshSession } from "./authThunk";
 
 const initialState = {
     user : null,
     isAuthenticated : false,
-    isLoading : false,
+    isLoading : true,
     error : null,
 };
 
@@ -32,6 +33,32 @@ const authSlice = createSlice({
             state.error = null;
         },
     },
+    extraReducers: (builder) => {
+        builder
+        .addCase(refreshSession.pending, (state) => {
+            
+            
+            state.isLoading = true;
+            state.error = null;
+        })
+        .addCase(refreshSession.fulfilled, (state, action) => {
+            
+            
+            state.isLoading = false;
+            state.user = action.payload;
+            state.isAuthenticated = !!action.payload;
+            state.error = null;
+        })
+        .addCase(refreshSession.rejected, (state,action) => {
+            
+            
+            state.isLoading = false;
+            state.user = null;
+            state.isAuthenticated = false;
+            state.error = action.payload || 'Session refresh failed';
+
+        });
+    }
 });
 
 export const { setUSer, clearUser, setLoading, setError, clearError} = authSlice.actions
