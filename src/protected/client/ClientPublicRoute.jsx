@@ -9,8 +9,10 @@ export default function ClientPublicRoute(){
 
     if(!user) return <Outlet />;
 
-    if(user.role == "client"){
-        return <Navigate to="/dashboard" replace />;
+    if (user.role === "client") {
+        return user.has_profile
+        ? <Navigate to="/Dashboard" replace />
+        : <Navigate to="/onboarding" replace />;
     }
 
     if(user.role === "admin"){

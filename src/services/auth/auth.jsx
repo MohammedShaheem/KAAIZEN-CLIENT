@@ -1,8 +1,9 @@
-import api from "../api/axios";
+import api from "@/api/axios";
 
 export const csrfRequest = () => api.get("/api/auth/csrf/");
 export const loginRequest = (payload) => api.post("/api/auth/login/", payload);
-export const signupRequest = (payload) => api.post("/api/auth/signup/", payload);
+export const clientsignupRequest = (payload) => api.post("/api/auth/client_signup/", payload);
+export const trainersignupRequest = (payload) => api.post("/api/auth/trainer_signup/", payload);
 export const verifyOtpRequest = (payload) => api.post("/api/auth/verify-otp/", payload);
 export const meRequest = () => api.get("/api/auth/me/");
 export const refreshRequest = () => api.post("/api/auth/refresh/");

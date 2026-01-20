@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import { forgotPasswordRequest } from '@/services/auth';
+import { forgotPasswordRequest } from '@/services/auth/auth';
 import { emailRule } from '@/validators/common.schema';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
 import BaseAuthForm from '@/components/auth/forms/BaseAuthForm';
@@ -47,7 +47,7 @@ export default function ForgotPassword() {
         {({ isSubmitting }) => (
           <>
             <EmailField name="email" />
-            <SubmitButton disabled={isSubmitting}>Send OTP</SubmitButton>
+            <SubmitButton disabled={isSubmitting} type="submit">Send OTP</SubmitButton>
             <p className="text-center mt-8 text-gray-600">
               Remember your password? <AuthLink to="/login">Login</AuthLink>
             </p>

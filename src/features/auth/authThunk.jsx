@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { meRequest, refreshRequest } from "@/services/auth";
+import { meRequest,refreshRequest } from "@/services/auth/auth";
 
 export const refreshSession = createAsyncThunk(
     'auth/refreshSession',

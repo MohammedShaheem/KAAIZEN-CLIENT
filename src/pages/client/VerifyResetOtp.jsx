@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { verifyResetOtpRequest, resendresetotp } from '@/services/auth';
+import { verifyResetOtpRequest, resendresetotp } from '@/services/auth/auth';
 import { emailRule, otpRule } from '@/validators/common.schema';
 import OTPForm from '@/components/auth/forms/OTPForm';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
@@ -18,9 +18,12 @@ export default function VerifyResetOtp() {
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      await verifyResetOtpRequest(values);
+      const res = await verifyResetOtpRequest(values);
+      const reset_token = res.data.reset_token;
+      console.log("reset_token from verifyreset",reset_token);
+      
       navigate('/reset-password', {
-        state: { email: values.email, resetToken: 'from-backend' }, // Assume token from verify response
+        state: { email: values.email, reset_token }, 
       });
     } catch (err) {
       setErrors({ otp: err.response?.data?.detail || 'Invalid OTP' });
