@@ -2,7 +2,7 @@ import React from 'react';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginRequest, googleAuth } from '@/services/auth';
+import { loginRequest, googleAuth } from '@/services/auth/auth';
 import { GoogleLogin } from '@react-oauth/google';
 import { emailRule, passwordRule } from '@/validators/common.schema';
 import { setUSer, setError, clearError, setLoading } from '@/features/auth/authSlice';
@@ -28,7 +28,19 @@ export default function Login() {
     try {
       const response = await loginRequest(values);
       dispatch(setUSer(response.data.user));
-      navigate('/dashboard', { replace: true });
+      console.log((response.data.user.has_profile));
+
+      if (response.data.user.role !== 'client') {
+        throw new Error('Invalid role for client login');
+      }
+      
+      
+      
+      if (response.data.user.has_profile) {
+        navigate('/Dashboard', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
     } catch (err) {
       dispatch(setError(err.response?.data?.detail || 'Invalid email or password'));
     } finally {
@@ -43,7 +55,15 @@ export default function Login() {
     try {
       const response = await googleAuth({ id_token: credentialResponse.credential });
       dispatch(setUSer(response.data.user));
-      navigate('/dashboard', { replace: true });
+      if (response.data.user.role !== 'client') {
+        throw new Error('Invalid role for client login');
+      }
+      console.log(response.data.user.has_profile);
+      if (response.data.user.has_profile) {
+        navigate('/Dashboard', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
     } catch (err) {
       dispatch(setError(err.response?.data?.detail || 'Google login failed'));
     } finally {
@@ -71,7 +91,7 @@ export default function Login() {
             <div className="flex justify-end">
               <AuthLink to="/forgot-password">Forgot Password?</AuthLink>
             </div>
-            <SubmitButton disabled={isSubmitting || isLoading}>Login Now</SubmitButton>
+            <SubmitButton disabled={isSubmitting || isLoading} type="submit" >Login Now</SubmitButton>
             <div className="flex items-center my-6">
               <div className="flex-1 h-px bg-gray-200" />
               <span className="px-4 text-gray-500 text-sm font-semibold">Login with Others</span>

@@ -1,0 +1,182 @@
+.water-glass-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 140px;
+  position: relative;
+}
+
+.water-glass {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Realistic water flowing animation with smooth transitions */
+@keyframes waterFlow {
+  0% {
+    transform: translateY(2px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(2px);
+  }
+}
+
+.water-fill {
+  animation: waterFlow 1.5s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced animation when glass becomes full */
+@keyframes fillUp {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.water-fill-full {
+  animation: waterFlow 1.5s ease-in-out infinite, fillUp 0.6s ease-out;
+}
+
+/* Water wave surface animation */
+@keyframes waveAnimation {
+  0% {
+    d: path("M 20 {cy} Q 30 {cy-2} 40 {cy} T 60 {cy}");
+  }
+  50% {
+    d: path("M 20 {cy} Q 30 {cy+2} 40 {cy} T 60 {cy}");
+  }
+  100% {
+    d: path("M 20 {cy} Q 30 {cy-2} 40 {cy} T 60 {cy}");
+  }
+}
+
+.water-wave {
+  animation: waveAnimation 1.2s ease-in-out infinite;
+}
+
+/* Bubble floating animations with varied timing */
+@keyframes bubble-float-1 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-60px) translateX(-8px);
+    opacity: 0;
+  }
+}
+
+@keyframes bubble-float-2 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.5;
+  }
+  85% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(-65px) translateX(6px);
+    opacity: 0;
+  }
+}
+
+@keyframes bubble-float-3 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: translateY(-55px) translateX(-5px);
+    opacity: 0;
+  }
+}
+
+.water-bubble {
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+.bubble-1 {
+  animation: bubble-float-1 2.5s ease-in infinite;
+  animation-delay: 0s;
+}
+
+.bubble-2 {
+  animation: bubble-float-2 2.8s ease-in infinite;
+  animation-delay: 0.5s;
+}
+
+.bubble-3 {
+  animation: bubble-float-3 3s ease-in infinite;
+  animation-delay: 1s;
+}
+
+/* Success popup animation with thumbs up icon */
+@keyframes successPop {
+  0% {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translateY(-10px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(-30px);
+    opacity: 0;
+  }
+}
+
+.success-popup {
+  animation: successPop 2s ease-out forwards;
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+}
+
+/* Button hover and active states */
+button {
+  transition: all 0.2s ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .water-glass-container {
+    width: 90px;
+    height: 130px;
+  }
+}

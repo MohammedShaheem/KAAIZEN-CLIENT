@@ -2,7 +2,7 @@ import React from 'react';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginRequest } from '@/services/auth';
+import { loginRequest } from '@/services/auth/auth';
 import { emailRule, passwordRule } from '@/validators/common.schema';
 import { setUSer, setError, clearError, setLoading } from '@/features/auth/authSlice';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
@@ -49,7 +49,7 @@ export default function Login() {
           <>
             <EmailField name="email" />
             <PasswordField name="password" />
-            <SubmitButton disabled={isSubmitting || isLoading}>Login Now</SubmitButton>
+            <SubmitButton disabled={isSubmitting || isLoading} type="submit">Login Now</SubmitButton>
             <p className="text-center mt-8 text-gray-600">
               Client login? <AuthLink to="/login">Client Portal</AuthLink>
             </p>

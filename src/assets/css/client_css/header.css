@@ -1,0 +1,105 @@
+/* FLOWING BORDER ANIMATION    */
+@keyframes flowingBorderHeaderBottom {
+  0% {
+    background-position: 0% 0%, 0% 0%;
+  }
+  100% {
+    background-position: 0% 0%, 400% 0%;
+  }
+}
+
+
+/* HEADER CORE CONTAINER       */
+.flowing-border-header {
+  --_border-main: var(--border-main, #8b5cf6);
+  --_border-mid: var(--border-mid, #a78bfa);
+  --_border-light: var(--border-light, #c4b5fd);
+
+  --_glow: var(--glow-color);
+  --_divider: var(--divider-color, rgba(139, 92, 246, 0.3));
+
+  border-bottom: 2px solid transparent;
+  background-image: linear-gradient(to right, #faf8f6, #faf8f6),
+    linear-gradient(
+      to right,
+      var(--_border-main) 0%,
+      var(--_border-mid) 15%,
+      var(--_border-light) 30%,
+      var(--_border-mid) 45%,
+      var(--_border-main) 60%,
+      var(--_border-mid) 75%,
+      var(--_border-light) 90%,
+      transparent 100%
+    );
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  background-size: 100% 100%, 400% 100%;
+  animation: flowingBorderHeaderBottom 5s linear infinite;
+
+  /* Dynamic glow */
+  box-shadow: 0 12px 32px var(--_glow);
+}
+
+/* BUBBLES / FLOATING LIGHTS  */
+.header-bubble {
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--bubble-color, rgba(139, 92, 246, 0.15)),
+    transparent
+  );
+}
+
+/* TEXT ACCENTS               */
+.header-accent {
+  color: var(--text-accent);
+}
+
+
+/* DIVIDER                   */
+.header-divider {
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--_divider),
+    transparent
+  );
+}
+
+/* SPACER                    */
+.header-spacer {
+  height: 88px;
+  width: 100%;
+}
+
+/* FLOAT ANIMATION           */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* PROFILE THEME TOKENS       */
+.profile-name {
+  color: var(--profile-name, #0f172a);
+  transition: color 0.3s ease;
+}
+
+.group:hover .profile-name {
+  color: var(--profile-hover, #7c3aed);
+}
+
+.profile-subtext {
+  color: var(--profile-subtext, #475569);
+}
+
+.profile-border {
+  border-color: var(--profile-border);
+}

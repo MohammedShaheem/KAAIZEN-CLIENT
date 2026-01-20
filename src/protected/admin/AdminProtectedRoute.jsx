@@ -13,7 +13,8 @@ export default function AdminProtectedRoute() {
     }
 
     if(user.role !== "admin"){
-        return <Navigate to="admin/dashboard" replace />;
+        return <Navigate to="/admin/dashboard" replace />;
+
     }
 
     return <Outlet />;

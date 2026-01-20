@@ -1,0 +1,165 @@
+.food-plate-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  position: relative;
+}
+
+.food-plate {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* Food plate filling animation */
+@keyframes foodFill {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.food-fill {
+  animation: foodFill 2s ease-in-out infinite;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: 50px 50px;
+}
+
+/* Enhanced animation when plate becomes full */
+@keyframes fillUpFood {
+  0% {
+    transform: rotate(0deg) scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+    opacity: 0.95;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.7;
+  }
+}
+
+.food-fill-full {
+  animation: foodFill 2s ease-in-out infinite, fillUpFood 0.8s ease-out;
+}
+
+/* Food piece floating animations */
+@keyframes piece-float-1 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-4px) translateX(2px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.6;
+  }
+}
+
+@keyframes piece-float-2 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-3px) translateX(-3px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.5;
+  }
+}
+
+@keyframes piece-float-3 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-5px) translateX(1px);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.55;
+  }
+}
+
+.food-piece {
+  animation-duration: 1.8s;
+  animation-iteration-count: infinite;
+}
+
+.piece-1 {
+  animation: piece-float-1 1.8s ease-in-out infinite;
+}
+
+.piece-2 {
+  animation: piece-float-2 2.2s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+.piece-3 {
+  animation: piece-float-3 2s ease-in-out infinite;
+  animation-delay: 0.6s;
+}
+
+/* Success popup animation with star icon */
+@keyframes successPopFood {
+  0% {
+    transform: scale(0) rotate(-45deg) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3) rotate(10deg) translateY(-15px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8) rotate(0deg) translateY(-40px);
+    opacity: 0;
+  }
+}
+
+.success-popup-food {
+  animation: successPopFood 2s ease-out forwards;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+}
+
+/* Button interactions */
+button {
+  transition: all 0.2s ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .food-plate-container {
+    width: 110px;
+    height: 110px;
+  }
+}

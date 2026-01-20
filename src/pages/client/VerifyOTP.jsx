@@ -2,7 +2,7 @@ import React from 'react';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { verifyOtpRequest } from '@/services/auth';
+import { verifyOtpRequest } from '@/services/auth/auth';
 import { setUSer } from '@/features/auth/authSlice';
 import { emailRule, otpRule } from '@/validators/common.schema';
 import OTPForm from '@/components/auth/forms/OTPForm';

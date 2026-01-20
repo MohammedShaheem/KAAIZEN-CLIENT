@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import ClientRoutes from "@/routes/ClientRoutes";
 import AdminRoutes from "@/routes/AdminRoutes";
 import { refreshSession } from "./features/auth/authThunk";
+import { Spinner } from "./components/common/Spinner";
+import TrainerRoutes from "./routes/TrainerRoutes";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -20,9 +22,7 @@ export default function App() {
 
   if (isLoading){
     return (
-      <div className="h-screen flex items-center justify-center">
-        <p>Checking session...</p>
-      </div>
+      <Spinner loading={isLoading} size={64} />
     );
   }
 
@@ -31,6 +31,7 @@ export default function App() {
       <Routes>
         <Route path="/*" element={<ClientRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route path="/trainer/*" element={<TrainerRoutes />} />
       </Routes>
   );
 }

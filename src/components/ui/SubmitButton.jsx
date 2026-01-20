@@ -1,17 +1,13 @@
-import React from 'react';
-
-const SubmitButton = ({ children, disabled, isSubmitting, className = '', ...props }) => (
+const SubmitButton = ({ children, disabled, isSubmitting, onClick, type = "button" }) => (
   <button
-    type="submit"
+    type={type}
+    onClick={onClick}
     disabled={disabled || isSubmitting}
-    className={`w-full py-3 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 ${className}`}
-    style={{
-      background: "linear-gradient(135deg, #14b8a6 0%, #8b5cf6 100%)",
-    }}
-    {...props}
+    className="w-full py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
   >
-    {isSubmitting ? "Loading..." : children}
+    {isSubmitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+    {children}
   </button>
-);
+)
 
-export default SubmitButton;
+export default SubmitButton
