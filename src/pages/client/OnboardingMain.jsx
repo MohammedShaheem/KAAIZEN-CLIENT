@@ -55,7 +55,8 @@ export default function OnboardingMain() {
       ...stepData,
     }
     setIsSubmitting(true)
-
+    console.log("data before profile creation",fullData);
+    
     try {
       await createClientProfile(fullData)
       console.log("Profile created:", fullData)

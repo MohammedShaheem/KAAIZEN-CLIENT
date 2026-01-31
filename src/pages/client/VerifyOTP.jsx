@@ -7,7 +7,7 @@ import { setUSer } from '@/features/auth/authSlice';
 import { emailRule, otpRule } from '@/validators/common.schema';
 import OTPForm from '@/components/auth/forms/OTPForm';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
-import verifyOtpImage from '@/assets/client-images/client-otp-verify.avif'; // Assume image
+import verifyOtpImage from '@/assets/client-images/client-otp-verify.avif';
 
 export default function VerifyOTP() {
   const dispatch = useDispatch();

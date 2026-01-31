@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import * as Yup from 'yup';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -25,10 +27,18 @@ export default function ResetPassword() {
     );
   }
 
-  const initialValues = { email: email, new_password: '' };
-  const validationSchema = Yup.object({ email: emailRule, new_password: passwordRule });
+  const initialValues = { email: email, new_password: '', confirmPassword: '' };
+  const validationSchema = Yup.object({
+    email: emailRule,
+    new_password: passwordRule,
+    confirmPassword: passwordRule.required('Confirm password is required'),
+  });
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    if (values.new_password !== values.confirmPassword) {
+      setErrors({ confirmPassword: 'Passwords must match' });
+      return;
+    }
     try {
       await resetPasswordRequest({
         email: values.email,
@@ -56,7 +66,8 @@ export default function ResetPassword() {
         {({ isSubmitting }) => (
           <>
             <EmailField name="email" disabled />
-            <PasswordField name="new_password" />
+            <PasswordField name="new_password" label="New Password" />
+            <PasswordField name="confirmPassword" label="Confirm Password"placeholder="confirm password"/>
             <SubmitButton disabled={isSubmitting} type="submit">Reset Password</SubmitButton>
             <p className="text-center mt-8 text-gray-600">
               Remember your password? <AuthLink to="/login">Back to Login</AuthLink>

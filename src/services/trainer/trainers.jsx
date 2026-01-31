@@ -2,7 +2,7 @@ import api from "../../api/axios";
 
 export const getTrainerProfile = async () => {
   try {
-    const response = await api.get("/api/trainer/me/profile");
+    const response = await api.get("/api/trainers/me/profile");
     return response.data;
   } catch (error) {
     if (error.response?.status === 404) {
@@ -18,7 +18,7 @@ export const createTrainerProfile = (data) => {
 
 export const updateTrainerProfile = async (data) => {
   try {
-    const response = await api.patch("/api/trainer/me/profile/", data);
+    const response = await api.patch("/api/trainers/me/profile/", data);
     return response.data;
   } catch (error) {
     if (error.response?.status === 404) {

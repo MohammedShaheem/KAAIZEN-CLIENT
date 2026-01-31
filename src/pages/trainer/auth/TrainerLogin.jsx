@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginRequest, googleAuth } from '@/services/auth/auth';
 import { GoogleLogin } from '@react-oauth/google';
-import { emailRule, passwordRule } from '@/validators/common.schema';
+import { emailRule, passwordRule, roleRule } from '@/validators/common.schema';
 import { setUSer, setError, clearError, setLoading } from '@/features/auth/authSlice';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
 import BaseAuthForm from '@/components/auth/forms/BaseAuthForm';
@@ -19,8 +19,8 @@ export default function TrainerLogin() {
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
 
-  const initialValues = { email: '', password: '' };
-  const validationSchema = Yup.object({ email: emailRule, password: passwordRule });
+  const initialValues = { email: '', password: '', login_as: 'trainer' };
+  const validationSchema = Yup.object({ email: emailRule, password: passwordRule, login_as: roleRule(['trainer']) });
 
   const handleSubmit = async (values, { setSubmitting }) => {
     dispatch(clearError());
@@ -29,7 +29,7 @@ export default function TrainerLogin() {
       const response = await loginRequest(values);
       dispatch(setUSer(response.data.user));
 
-      console.log(response.data.user.has_profile);
+      console.log("has profile from login",response.data.user.has_profile);
 
 
 
@@ -59,6 +59,7 @@ export default function TrainerLogin() {
       if (response.data.user.role !== 'trainer') {
         throw new Error('Invalid role for trainer login');
       }
+      log("from trainerlogin",response.data.user)
       if (response.data.user.has_profile) {
         navigate('/trainer/trainer_dashboard', { replace: true });
       } else {

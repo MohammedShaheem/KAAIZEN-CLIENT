@@ -9,6 +9,8 @@ export default function TrainerPublicRoute() {
   if (!user) return <Outlet />;
 
   if (user.role === "trainer") {
+    console.log("log from trainer public reoutes",user);
+    
     return user.has_profile
       ? <Navigate to="/trainer/trainer_dashboard" replace />
       : <Navigate to="/trainer/trainer_onboarding" replace />;
@@ -19,7 +21,7 @@ export default function TrainerPublicRoute() {
   }
 
   if (user.role === "client") {
-    return <Navigate to="/onboarding" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

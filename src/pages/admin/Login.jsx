@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginRequest } from '@/services/auth/auth';
-import { emailRule, passwordRule } from '@/validators/common.schema';
+import { emailRule, passwordRule, roleRule } from '@/validators/common.schema';
 import { setUSer, setError, clearError, setLoading } from '@/features/auth/authSlice';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
 import BaseAuthForm from '@/components/auth/forms/BaseAuthForm';
@@ -18,8 +18,8 @@ export default function Login() {
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
 
-  const initialValues = { email: '', password: '' };
-  const validationSchema = Yup.object({ email: emailRule, password: passwordRule });
+  const initialValues = { email: '', password: '', login_as: 'admin' };
+  const validationSchema = Yup.object({ email: emailRule, password: passwordRule, login_as: roleRule(['admin'])  });
 
   const handleSubmit = async (values, { setSubmitting }) => {
     dispatch(clearError());

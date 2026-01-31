@@ -1,5 +1,6 @@
 import api from "@/api/axios";
 
+console.log("🔴 auth service loaded");
 export const csrfRequest = () => api.get("/api/auth/csrf/");
 export const loginRequest = (payload) => api.post("/api/auth/login/", payload);
 export const clientsignupRequest = (payload) => api.post("/api/auth/client_signup/", payload);

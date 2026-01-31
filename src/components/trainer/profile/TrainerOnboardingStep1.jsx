@@ -15,6 +15,11 @@ const schema = Yup.object({
   experience_certificate: Yup.string().required("Certificate is required"),
 });
 
+
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+
 export default function TrainerOnboardingStep1({
   formData,
   errors,
@@ -32,6 +37,12 @@ export default function TrainerOnboardingStep1({
       setUploadError("Only PDF files are allowed");
       return;
     }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setUploadError(`File size must be less than ${MAX_FILE_SIZE_MB}MB`);
+      return;
+    }
+
 
     try {
       setUploading(true);
@@ -97,6 +108,10 @@ export default function TrainerOnboardingStep1({
           <label className="block text-sm font-medium mb-1">
             Experience Certificate (PDF)
           </label>
+          <p className="text-xs text-gray-500">
+            Max file size: {MAX_FILE_SIZE_MB}MB (PDF only)
+          </p>
+
           <input
             type="file"
             accept="application/pdf"

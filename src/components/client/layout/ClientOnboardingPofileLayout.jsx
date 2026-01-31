@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Upload, User } from "lucide-react"
 
 const STEPS = [
   { id: 1, label: "Personal Info" },
@@ -49,22 +49,32 @@ export default function ClientLayout({ currentStep = 1, children }) {
           {/* Large Purple Circle Background */}
           <div className="absolute w-96 h-96 bg-purple-600 rounded-full opacity-20" />
 
-          {/* Fitness People Image */}
-          <img
-            src="/fitness-people-working-out.jpg"
-            alt="Fitness people"
-            className="relative z-10 h-80 w-80 object-cover rounded-full"
-          />
+          {/* Profile Photo Upload Placeholder */}
+          <div className="relative z-10 flex flex-col items-center justify-center">
+            <div className="relative w-80 h-80 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center border-4 border-purple-200 shadow-lg">
+              {/* User Icon Placeholder */}
+              <div className="text-center">
+                <User className="w-32 h-32 text-purple-300 mx-auto mb-4" />
+                <p className="text-purple-600 font-semibold text-lg">Upload Photo</p>
+                <p className="text-purple-400 text-sm mt-1">JPG, PNG up to 5MB</p>
+              </div>
+
+              {/* Upload Indicator Badge */}
+              <div className="absolute bottom-6 right-6 bg-purple-600 rounded-full p-3 shadow-lg hover:bg-purple-700 transition-colors cursor-pointer">
+                <Upload className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Skip Button */}
-      <div className="absolute top-6 right-6">
+      {/* <div className="absolute top-6 right-6">
         <button className="flex items-center gap-2 px-6 py-3 border-2 border-teal-500 text-teal-600 font-semibold rounded-full hover:bg-teal-50 transition-colors">
           SKIP
           <ArrowRight className="w-5 h-5" />
         </button>
-      </div>
+      </div> */}
     </div>
   )
 }

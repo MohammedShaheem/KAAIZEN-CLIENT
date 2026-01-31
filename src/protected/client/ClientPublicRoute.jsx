@@ -11,7 +11,7 @@ export default function ClientPublicRoute(){
 
     if (user.role === "client") {
         return user.has_profile
-        ? <Navigate to="/Dashboard" replace />
+        ? <Navigate to="/dashboard" replace />
         : <Navigate to="/onboarding" replace />;
     }
 

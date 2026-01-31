@@ -21,6 +21,7 @@ export default function Signup() {
   const [timer, setTimer] = useState(56);
   const [otpError, setOtpError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const inputRefs = useRef([]);
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function Signup() {
       setErrors({ confirmPassword: 'Passwords must match' });
       return;
     }
+    setIsSigningUp(true);
     try {
       await clientsignupRequest({ ...values }); 
       setUserEmail(values.email);
@@ -64,6 +66,7 @@ export default function Signup() {
         email: err.response?.data?.detail || 'Signup failed. Try again',
       });
     } finally {
+      setIsSigningUp(false);
       setSubmitting(false);
     }
   };
@@ -92,12 +95,10 @@ export default function Signup() {
 
   const handleResendOtp = async () => {
     try {
-      // Assume resend API; if not, just reset
-      // await resendSignupOtp({ email: userEmail });
-      console.log('Resend OTP for', userEmail); // Placeholder
+      console.log('Resend OTP for', userEmail); 
       setTimer(56);
       setOtpError('');
-      inputRefs.current.forEach(ref => (ref.value = '')); // Clear inputs
+      inputRefs.current.forEach(ref => (ref.value = '')); 
       inputRefs.current[0]?.focus();
     } catch (err) {
       setOtpError(err.response?.data?.detail || 'Resend failed');
@@ -115,7 +116,7 @@ export default function Signup() {
     try {
       const response = await verifyOtpRequest({ email: userEmail, otp });
       dispatch(setUSer(response.data.user));
-      setShowOtpModal(false); // Close modal
+      setShowOtpModal(false); 
       navigate('/onboarding', { replace: true });
     } catch (err) {
       setOtpError(err.response?.data?.detail || 'Invalid or expired OTP');
@@ -130,6 +131,19 @@ export default function Signup() {
 
   return (
     <AuthLayout imageSrc={SignupImage} role="client">
+      {/* Loading Spinner Overlay */}
+      {isSigningUp && (
+        <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-40">
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-blue-500 rounded-full animate-spin"></div>
+            </div>
+            <p className="text-white font-semibold">Creating your account...</p>
+          </div>
+        </div>
+      )}
+
       <div className={`transition-all duration-300 ${showOtpModal ? 'opacity-50 pointer-events-none' : ''}`}>
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
           {({ isSubmitting }) => (
@@ -144,7 +158,19 @@ export default function Signup() {
               
               <Field name="role" type="hidden" value="client" />
               
-              <SubmitButton type="submit" disabled={isSubmitting}>Sign Up Now</SubmitButton>
+              <SubmitButton type="submit" disabled={isSubmitting || isSigningUp}>
+                {isSigningUp ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Signing up...
+                  </span>
+                ) : (
+                  'Sign Up Now'
+                )}
+              </SubmitButton>
               
               <p className="text-center mt-8 text-gray-600">
                 Already have an account? <AuthLink onClick={handleLogin}>Login</AuthLink>
@@ -215,7 +241,17 @@ export default function Signup() {
                 background: 'linear-gradient(135deg, #93c5fd 0%, #a5b4fc 100%)',
               }}
             >
-              {isVerifying ? 'Verifying...' : 'Verify OTP'}
+              {isVerifying ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Verifying...
+                </span>
+              ) : (
+                'Verify OTP'
+              )}
             </SubmitButton>
             
             <div className="text-center text-sm text-gray-600">

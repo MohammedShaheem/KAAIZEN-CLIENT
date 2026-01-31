@@ -9,6 +9,9 @@ export default function TrainerProtectedRoute() {
   if (!user) {
     return <Navigate to="/trainer/login" replace />;
   }
+  
+  
+  
 
   if (user.role !== "trainer") {
     if (user.role === "admin") {
