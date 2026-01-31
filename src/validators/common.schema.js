@@ -9,6 +9,11 @@ export const passwordRule = Yup.string()
   .min(6, "Minimum 6 characters")
   .required("Password is required");
 
+export const roleRule = (allowedRoles) =>
+  Yup.string()
+  .oneOf(allowedRoles, 'Invalid role for this login portal')
+  .required()
+
 export const otpRule = Yup.string()
   .length(6, "OTP must be 6 digits")
   .required("OTP is required");
@@ -23,7 +28,7 @@ export const fullNameRule = Yup.string()
 
 export const phoneRule = Yup.string()
   .required("Phone is required")
-  .transform((value) => value?.replace(/\D/g, '')) // Strips non-digits
+  .transform((value) => value?.replace(/\D/g, '')) 
   .test('len', 'Phone number must be exactly 10 digits', (value) => /^\d{10}$/.test(value || ''))
   .matches(/^\d{10}$/, "Phone number must be exactly 10 digits");
 

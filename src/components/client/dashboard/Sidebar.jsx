@@ -17,7 +17,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: Home, label: "Home", path:"/Dashboard"},
-    { icon: Dumbbell, label: "Training" },
+    { icon: Dumbbell, label: "Training", path:"/workout_categories" },
     { icon: Clock, label: "History" },
     { icon: CheckCircle, label: "Progress" },
     { icon: Briefcase, label: "Plans" },

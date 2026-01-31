@@ -1,12 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import store  from "../app/store";
-import { clearUser } from "../features/auth/authSlice";
+
 
 
 const API_BASE = "http://localhost:8000";
     
-const api = axios.create({
+const api = axios.create({  
     baseURL: API_BASE,
     withCredentials: true,
     headers:{
@@ -15,7 +14,8 @@ const api = axios.create({
 });
 
 
-// attaching csrf for every unsafe methods
+// attaching csrf for every unsafe methods 
+// in all the unsafe requests
 api.interceptors.request.use((config) => {
     const method = (config.method || "").toUpperCase();
     if(["POST","PUT","PATCH","DELETE"].includes(method)) {
@@ -28,6 +28,12 @@ api.interceptors.request.use((config) => {
 });
 
 
+let onUnauthorized = null;
+
+export const setUnauthorizedHandler = (handler) => {
+  onUnauthorized = handler;
+};
+
 
 let isRefreshing = false;
 let queue = [];
@@ -36,10 +42,13 @@ const processQueue = (err) => {
     queue.forEach(({ reject }) => reject(err));
     queue = [];
 };
-
+// adding interceptor in response
+// Every response that comes back from this api instance will pass through this function first
 api.interceptors.response.use(
+    // if no error
     (res) => res,
     async (error) => {
+        // getting the request that caused error
         const originalRequest = error.config;
 
         // handling the error in the waiting queue other than 401
@@ -49,13 +58,14 @@ api.interceptors.response.use(
         
         // For not doing the refresh operation for me request and refresh request
         if (originalRequest.url?.includes("/api/auth/me") || originalRequest.url?.includes("/api/auth/refresh/")){
+            onUnauthorized?.();
             return Promise.reject(error);
         }
 
 
         // for checking whether the 401 comes more than 2
         if(originalRequest._retry) {
-            store.dispatch(clearUser());
+            onUnauthorized?.();
             return Promise.reject(error);
         }
 
@@ -81,7 +91,8 @@ api.interceptors.response.use(
         }catch (refreshError) {
             isRefreshing = false;
             processQueue(refreshError);
-            store.dispatch(clearUser());
+            // calling the function
+            onUnauthorized?.();
             return Promise.reject(refreshError)
 
         }

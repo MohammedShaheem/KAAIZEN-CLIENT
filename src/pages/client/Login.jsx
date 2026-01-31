@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginRequest, googleAuth } from '@/services/auth/auth';
 import { GoogleLogin } from '@react-oauth/google';
-import { emailRule, passwordRule } from '@/validators/common.schema';
+import { emailRule, passwordRule, roleRule } from '@/validators/common.schema';
 import { setUSer, setError, clearError, setLoading } from '@/features/auth/authSlice';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
 import BaseAuthForm from '@/components/auth/forms/BaseAuthForm';
@@ -19,8 +19,8 @@ export default function Login() {
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
 
-  const initialValues = { email: '', password: '' };
-  const validationSchema = Yup.object({ email: emailRule, password: passwordRule });
+  const initialValues = { email: '', password: '',login_as: 'client'};
+  const validationSchema = Yup.object({ email: emailRule, password: passwordRule, login_as: roleRule(['client']) });
 
   const handleSubmit = async (values, { setSubmitting }) => {
     dispatch(clearError());
@@ -30,14 +30,14 @@ export default function Login() {
       dispatch(setUSer(response.data.user));
       console.log((response.data.user.has_profile));
 
-      if (response.data.user.role !== 'client') {
-        throw new Error('Invalid role for client login');
-      }
+      // if (response.data.user.role !== 'client') {
+      //   throw new Error('Invalid role for client login');
+      // }
       
       
       
       if (response.data.user.has_profile) {
-        navigate('/Dashboard', { replace: true });
+        navigate('/dashboard', { replace: true });
       } else {
         navigate('/onboarding', { replace: true });
       }
@@ -60,7 +60,7 @@ export default function Login() {
       }
       console.log(response.data.user.has_profile);
       if (response.data.user.has_profile) {
-        navigate('/Dashboard', { replace: true });
+        navigate('/dashboard', { replace: true });
       } else {
         navigate('/onboarding', { replace: true });
       }

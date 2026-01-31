@@ -25,7 +25,7 @@ export default function AdminRoutes() {
         <Route element={<AdminLayout />}>
           
           <Route index element={<AdminDashboard />} />
-          <Route path="admindashboard" element={<AdminDashboard />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="clientslisting" element={<ClientList />} />
           <Route path="clients/:id" element={<ClientDetails />} />
           <Route path="trainerslisting" element={<TrainerList />} />
