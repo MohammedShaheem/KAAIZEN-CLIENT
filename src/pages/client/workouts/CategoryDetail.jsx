@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCategoryDetail } from "@/hooks/client/workout/useWorkout";
-
+import ClientLayout from "@/components/client/layout/ClientLayout";
 export default function CategoryDetail() {
   const { categoryId } = useParams();
   const [page, setPage] = useState(1);
@@ -33,6 +33,7 @@ export default function CategoryDetail() {
   }
 
   return (
+    <ClientLayout>
     <div className="p-6">
       {/* Category Header */}
       <div className="mb-6">
@@ -105,5 +106,6 @@ export default function CategoryDetail() {
         </button>
       </div>
     </div>
+    </ClientLayout>
   );
 }

@@ -83,7 +83,6 @@
   }
 }
 
-
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;
@@ -93,16 +92,10 @@
   }
 }
 
-/* Flowing border animation for sidebar - flows from bottom to top to connect with header */
-@keyframes flowingBorder {
-  0% {
-    background-position: 0% 0%, 0% 100%;
-  }
-  100% {
-    background-position: 0% 0%, 0% -300%;
-  }
-}
+/* Flowing border animation REMOVED */
+/* @keyframes flowingBorder { } */
 
+/* Sidebar */
 .gym-sidebar {
   width: 96px;
   background: linear-gradient(
@@ -123,24 +116,6 @@
   overflow: hidden;
   z-index: 50;
 
-  /* Flowing border with synchronized animation matching header style */
-  border-right: 2px solid transparent;
-  background-image: linear-gradient(135deg, #faf8f6 0%, #f5f3f1 100%),
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      var(--border-main) 10%,
-      var(--border-mid) 25%,
-      var(--border-light) 40%,
-      var(--border-mid) 55%,
-      var(--border-main) 70%,
-      var(--border-mid) 85%,
-      var(--border-light) 100%
-    );
-  background-origin: padding-box, border-box;
-  background-clip: padding-box, border-box;
-  background-size: 100% 100%, 100% 400%;
-  animation: flowingBorder 5s linear infinite;
 }
 
 /* Bubble animations */
@@ -271,7 +246,6 @@
   color: white;
   border-color: var(--border-main);
   box-shadow: 0 8px 24px var(--glow-color), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-
 }
 
 .menu-item.active .menu-icon {
@@ -284,7 +258,12 @@
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.1);
   animation: shimmer 2s infinite;
-  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   background-size: 1000px 100%;
 }
 

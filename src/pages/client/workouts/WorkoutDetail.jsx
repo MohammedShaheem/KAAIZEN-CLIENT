@@ -2,6 +2,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import SessionVideoPlayer from "@/components/client/workout/SessionVideoPlayer";
 import { getcategoryDetail } from "@/services/client/workouts";
+import ClientLayout from "@/components/client/layout/ClientLayout";
 
 export default function WorkoutDetail() {
   const { workoutId } = useParams();
@@ -53,6 +54,7 @@ export default function WorkoutDetail() {
   }
 
   return (
+    <ClientLayout>
     <div className="p-6">
       <SessionVideoPlayer
         categoryId={categoryId}   
@@ -62,5 +64,6 @@ export default function WorkoutDetail() {
       />
 
     </div>
+    </ClientLayout>
   );
 }

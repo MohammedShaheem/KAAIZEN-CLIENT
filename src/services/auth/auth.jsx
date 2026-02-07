@@ -1,6 +1,6 @@
 import api from "@/api/axios";
 
-console.log("🔴 auth service loaded");
+
 export const csrfRequest = () => api.get("/api/auth/csrf/");
 export const loginRequest = (payload) => api.post("/api/auth/login/", payload);
 export const clientsignupRequest = (payload) => api.post("/api/auth/client_signup/", payload);
@@ -13,4 +13,5 @@ export const forgotPasswordRequest = (payload) => api.post("/api/auth/forgot-pas
 export const verifyResetOtpRequest = (payload) => api.post("/api/auth/verify-reset-otp/",payload);
 export const resetPasswordRequest = (payload) => api.post("/api/auth/reset-password/",payload);
 export const resendresetotp = (payload) => api.post("/api/auth/resend-otp/",payload)
+export const resendSignupOtp = (payload) => api.post("/api/auth/signup/resend-otp/",payload)
 export const googleAuth = (payload) => api.post("/api/auth/google-auth",payload)

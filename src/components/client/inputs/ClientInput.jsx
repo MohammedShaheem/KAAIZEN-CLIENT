@@ -1,5 +1,3 @@
-"use client"
-
 const ClientInput = ({ icon: Icon, label, type = "text", value, onChange, error, ...props }) => (
   <div className="space-y-2 mb-4">
     <label className="block text-sm font-medium text-gray-700">{label}</label>

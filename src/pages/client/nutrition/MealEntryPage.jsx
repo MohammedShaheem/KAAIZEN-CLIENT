@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDailySummary, getMealEntries } from "../../services/client/meals";
+import { getDailySummary,getMealEntries } from "@/services/client/meals";
 import { useSelector } from "react-redux";
 import { Spinner } from "@/components/common/Spinner";
 import SubmitButton from "@/components/ui/SubmitButton";

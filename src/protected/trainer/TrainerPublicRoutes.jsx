@@ -12,8 +12,8 @@ export default function TrainerPublicRoute() {
     console.log("log from trainer public reoutes",user);
     
     return user.has_profile
-      ? <Navigate to="/trainer/trainer_dashboard" replace />
-      : <Navigate to="/trainer/trainer_onboarding" replace />;
+      ? <Navigate to="/trainer/dashboard" replace />
+      : <Navigate to="/trainer/onboarding" replace />;
   }
 
   if (user.role === "admin") {

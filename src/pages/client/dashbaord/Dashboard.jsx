@@ -132,7 +132,6 @@ export default function ClientDashboard() {
 
   return (
     <ClientLayout
-      theme = "black"
       headerProps={{
         userName: userData?.name || "Client",
         location: "Meal Tracking",

@@ -27,3 +27,8 @@ export const updateTrainerProfile = async (data) => {
     throw new Error(error.response?.data?.detail || "Failed to update profile");
   }
 };
+
+export const getTrainerDashboard = async () => {
+  const response = await api.get("/api/trainers/dashboard/");
+  return response.data;
+};

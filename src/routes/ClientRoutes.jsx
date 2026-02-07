@@ -1,20 +1,25 @@
 import { Route, Routes, Navigate } from "react-router-dom";
-import Login from "@/pages/client/Login";
-import Signup from "@/pages/client/Signup";
-import VerifyOTP from "@/pages/client/VerifyOTP";
-import VerifyResetOtp from "@/pages/client/VerifyResetOtp";
-import ForgotPassword from "@/pages/client/ForgotPassword";
-import ResetPassword from "@/pages/client/ResetPassword";
+import Login from "@/pages/client/auth/Login";
+import Signup from "@/pages/client/auth/Signup";
+import VerifyOTP from "@/pages/client/auth/VerifyOTP";
+import VerifyResetOtp from "@/pages/client/auth/VerifyResetOtp";
+import ForgotPassword from "@/pages/client/auth/ForgotPassword";
+import ResetPassword from "@/pages/client/auth/ResetPassword";
 import ClientProtectedRoute from "@/protected/client/ClientProtectedRoute";
 import ClientPublicRoute from "@/protected/client/ClientPublicRoute";
-import Dashboard from "@/pages/client/Dashboard";
-import OnboardingMain from "@/pages/client/OnboardingMain";
-import MealEntryPage from "@/pages/client/MealEntryPage";
-import MealLoggingPage from "@/pages/client/MealLoggingPage";
-import SleepDashboard from "@/pages/client/SleepDashboard";
+import Dashboard from "@/pages/client/dashbaord/Dashboard";
+import OnboardingMain from "@/pages/client/onboarding/OnboardingMain";
+import MealEntryPage from "@/pages/client/nutrition/MealEntryPage";
+import MealLoggingPage from "@/pages/client/nutrition/MealLoggingPage";
+import SleepDashboard from "@/pages/client/sleep/SleepDashboard";
 import WorkoutCategories from "@/pages/client/workouts/WorkoutCategories";
 import CategoryDetail from "@/pages/client/workouts/CategoryDetail";
 import WorkoutDetail from "@/pages/client/workouts/WorkoutDetail";
+import ClientProfilePage from "@/pages/client/profile/ClientProfilePage";
+import PublicTrainingPlans from "@/pages/client/personaltraining/PublicTrainingPlans";
+import PublicTrainingPlanDetail from "@/pages/client/personaltraining/PublicTrainingPlanDetail ";
+import BookingPage from "@/pages/client/personaltraining/bookingPage";
+import ClientCurrentPlanPage from "@/pages/client/personaltraining/clientCurrentPlanPage";
 export default function ClientRoutes() {
   return (
     <Routes>
@@ -28,6 +33,7 @@ export default function ClientRoutes() {
       </Route>
 
       <Route element={<ClientProtectedRoute />}>
+        <Route path="/onboarding" element={<OnboardingMain />} />
         <Route path="/dashboard" element={< Dashboard />} />
         <Route path="/meals" element={<MealEntryPage />} />
         <Route path="/meals/log" element={<MealLoggingPage />} />
@@ -35,7 +41,13 @@ export default function ClientRoutes() {
         <Route path="/workout_categories" element={<WorkoutCategories />} />
         <Route path="/client/category_detail/:categoryId" element={<CategoryDetail />}/>
         <Route path="/client/workouts/:workoutId"element={<WorkoutDetail />}/>
-        <Route path="/onboarding" element={<OnboardingMain />} />
+        <Route path="/profile"element={<ClientProfilePage />}/>
+        <Route path="/training-plans" element={<PublicTrainingPlans />} />
+        <Route path="/training-plans/:planId"element={<PublicTrainingPlanDetail />}/>
+        <Route path="/booking"element={<BookingPage />}/>
+        <Route path="/current-plan"element={<ClientCurrentPlanPage />}/>
+
+        
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
