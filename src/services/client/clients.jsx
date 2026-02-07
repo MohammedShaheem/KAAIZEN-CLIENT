@@ -22,7 +22,10 @@ export const createClientProfile = (data) => {
 
 export const updateClientProfile = async (data) => {
   try {
-    const response = await api.patch("/api/client/me/profile")
+      const response = await api.patch(
+        "/api/client/me/profile/",
+        data
+      )
     return response.data;
   }catch (error){
     if (error.response?.status === 404) {

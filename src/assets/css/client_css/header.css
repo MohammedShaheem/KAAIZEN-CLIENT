@@ -19,7 +19,7 @@
   --_divider: var(--divider-color, rgba(139, 92, 246, 0.3));
 
   border-bottom: 2px solid transparent;
-  background-image: linear-gradient(to right, #faf8f6, #faf8f6),
+  background-image: linear-gradient(to right, #ffffff, #ffffff),
     linear-gradient(
       to right,
       var(--_border-main) 0%,

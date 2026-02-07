@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { clientsignupRequest, verifyOtpRequest } from '@/services/auth/auth'; 
+import { clientsignupRequest, verifyOtpRequest,resendSignupOtp } from '@/services/auth/auth'; 
 import { emailRule, passwordRule, otpRule } from '@/validators/common.schema';
 import { setUSer } from '@/features/auth/authSlice';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
@@ -73,13 +73,13 @@ export default function Signup() {
 
   const handleOtpChange = (index, value) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newOtpValues = [...Array(6).fill('')]; // Ensure 6 digits
+      const newOtpValues = [...Array(6).fill('')]; 
       
       inputRefs.current.forEach((ref, i) => {
         if (i !== index && ref?.value) newOtpValues[i] = ref.value;
       });
       newOtpValues[index] = value;
-      inputRefs.current[index].value = value; // Direct DOM update for refs
+      inputRefs.current[index].value = value; 
       setOtpError('');
       if (value && index < 5) {
         inputRefs.current[index + 1]?.focus();
@@ -94,16 +94,28 @@ export default function Signup() {
   };
 
   const handleResendOtp = async () => {
-    try {
-      console.log('Resend OTP for', userEmail); 
-      setTimer(56);
-      setOtpError('');
-      inputRefs.current.forEach(ref => (ref.value = '')); 
-      inputRefs.current[0]?.focus();
-    } catch (err) {
-      setOtpError(err.response?.data?.detail || 'Resend failed');
-    }
-  };
+  try {
+    console.log("Resend OTP for", userEmail);
+
+    await resendSignupOtp({
+      email: userEmail,
+    });
+    setTimer(56);
+    setOtpError("");
+    inputRefs.current.forEach(ref => {
+      if (ref) ref.value = "";
+    });
+    inputRefs.current[0]?.focus();
+
+  } catch (err) {
+    console.error(err);
+
+    setOtpError(
+      err.response?.data?.detail || "Resend failed. Please try again."
+    );
+  }
+};
+
 
   const handleVerifyOtp = async () => {
     const otpInputs = inputRefs.current;
@@ -131,7 +143,7 @@ export default function Signup() {
 
   return (
     <AuthLayout imageSrc={SignupImage} role="client">
-      {/* Loading Spinner Overlay */}
+      
       {isSigningUp && (
         <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-40">
           <div className="flex flex-col items-center gap-4">
@@ -180,11 +192,11 @@ export default function Signup() {
         </Formik>
       </div>
 
-      {/* OTP Modal Overlay */}
+      {/* otp modal */}
       {showOtpModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="w-full max-w-md p-8 bg-white rounded-3xl shadow-2xl mx-4 relative">
-            {/* Close Button (Optional) */}
+            
             <button
               onClick={() => setShowOtpModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -194,7 +206,7 @@ export default function Signup() {
               </svg>
             </button>
             
-            {/* Lock Icon */}
+            {/* lock icon */}
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
                 <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +222,7 @@ export default function Signup() {
             
             <h2 className="text-2xl font-bold text-center mb-8 tracking-wide">VERIFY YOUR ACCOUNT</h2>
             
-            {/* OTP Inputs */}
+            {/* otp inputs */}
             <div className="flex justify-center gap-3 mb-4">
               {Array.from({ length: 6 }, (_, index) => (
                 <input

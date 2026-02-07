@@ -1,25 +1,27 @@
-import { Bell, Plus } from "lucide-react";
-import { useState, useEffect } from "react";
-import "../../../assets/css/client_css/header.css";
+'use client';
+
+import { Bell, Plus } from "lucide-react"
+import { useState, useEffect } from "react"
+import "../../../assets/css/client_css/header.css"
 
 const Header = ({ userName = "Thomas Fletcher", userImage = null }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [notificationBounce, setNotificationBounce] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
+  const [notificationBounce, setNotificationBounce] = useState(false)
+  const [hoveredIcon, setHoveredIcon] = useState(null)
 
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    setIsVisible(true)
+  }, [])
 
   return (
     <>
-      {/* Fixed Header */}
       <div
         className={`fixed top-0 right-0 z-40 transition-all duration-500 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
         }`}
         style={{ left: "96px" }}
       >
-        {/* Animated bubble background elements */}
+        {/* Bubbles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
             className="absolute w-32 h-32 rounded-full blur-3xl animate-float header-bubble"
@@ -54,68 +56,87 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null }) => {
           />
         </div>
 
-        <div className="relative bg-gradient-to-br from-slate-50 via-stone-50 to-slate-100 flowing-border-header">
-          {/* Main Header Content */}
+        <div
+          className="relative flowing-border-header"
+          style={{
+            background: "#ffffff",
+          }}
+        >
           <div className="flex justify-between items-center px-8 py-3 gap-6">
             <div className="flex-1">
-              <p className="header-accent text-sm font-medium tracking-wide uppercase letter-spacing-wider animate-fade-in">
+              <p
+                className="text-sm font-medium tracking-wide uppercase animate-fade-in"
+                style={{ color: "var(--text-accent)" }}
+              >
                 Good Morning
               </p>
+
               <h1 className="text-3xl font-bold text-slate-900 mt-2 animate-fade-in">
-                Welcome Back{" "}
-                <span
-                  className="inline-block animate-bounce"
-                  style={{ animationDelay: "0.1s" }}
-                >
-                  💪
-                </span>
+                Welcome Back
               </h1>
             </div>
 
             <div className="flex items-center gap-5 group">
-              {/* Subscribe Button */}
               <button className="relative px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 active:scale-95 bg-white/70 backdrop-blur-md border profile-border hover:shadow-lg">
                 <span className="relative flex items-center gap-2">
                   Subscribe
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full animate-pulse bg-[var(--profile-hover,#7c3aed)]"></span>
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full animate-pulse bg-[var(--text-accent)]"></span>
                 </span>
               </button>
 
-              {/* Divider */}
               <div className="w-px h-8 header-divider"></div>
 
-              {/* Notification */}
               <button
-                className="p-2.5 rounded-lg transition-all duration-300 hover:bg-black/5 group relative"
-                onMouseEnter={() => setNotificationBounce(true)}
-                onMouseLeave={() => setNotificationBounce(false)}
+                className="p-2.5 rounded-lg transition-all duration-300 relative"
+                style={{
+                  backgroundColor: hoveredIcon === "bell" ? "rgba(0,0,0,0.05)" : "transparent",
+                }}
+                onMouseEnter={() => {
+                  setHoveredIcon("bell")
+                  setNotificationBounce(true)
+                }}
+                onMouseLeave={() => {
+                  setHoveredIcon(null)
+                  setNotificationBounce(false)
+                }}
               >
                 <Bell
                   size={20}
-                  className="transition-transform duration-300 group-hover:scale-110"
-                  style={{ color: "var(--text-accent, #7c3aed)" }}
+                  className="transition-transform duration-300"
+                  style={{
+                    color: "var(--text-accent)",
+                    transform: hoveredIcon === "bell" ? "scale(1.1)" : "scale(1)",
+                  }}
                 />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-400 rounded-full animate-pulse shadow-lg shadow-red-400/50"></span>
               </button>
 
-              {/* Add Button */}
-              <button className="p-2.5 rounded-lg transition-all duration-300 hover:bg-black/5 group">
+              <button
+                className="p-2.5 rounded-lg transition-all duration-300"
+                style={{
+                  backgroundColor: hoveredIcon === "plus" ? "rgba(0,0,0,0.05)" : "transparent",
+                }}
+                onMouseEnter={() => setHoveredIcon("plus")}
+                onMouseLeave={() => setHoveredIcon(null)}
+              >
                 <Plus
                   size={20}
-                  className="transition-transform duration-300 group-hover:scale-110"
-                  style={{ color: "var(--text-accent, #7c3aed)" }}
+                  className="transition-transform duration-300"
+                  style={{
+                    color: "var(--text-accent)",
+                    transform: hoveredIcon === "plus" ? "scale(1.1)" : "scale(1)",
+                  }}
                 />
               </button>
 
-              {/* Profile */}
               <div className="flex items-center gap-3 ml-2 pl-5 border-l profile-border transition-all duration-300 group cursor-pointer">
                 <div
                   className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-lg transition-all duration-300 group-hover:scale-110"
                   style={{
                     background:
-                      "linear-gradient(135deg, var(--logo-bg, #8b5cf6), var(--bg-dark, #7c3aed))",
+                      "linear-gradient(135deg, var(--bg-main), var(--bg-dark))",
                     boxShadow:
-                      "0 8px 24px var(--glow-color, rgba(139, 92, 246, 0.4))",
+                      "0 8px 24px var(--glow-color)",
                   }}
                 >
                   {userName
@@ -137,15 +158,13 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null }) => {
             </div>
           </div>
 
-          {/* Divider Line */}
           <div className="h-0.5 header-divider"></div>
         </div>
       </div>
 
-      {/* Spacer to push content down below fixed header */}
       <div className="header-spacer"></div>
     </>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

@@ -3,6 +3,7 @@ import WeeklySleepChart from "@/components/client/sleepTracking/WeeklySleepChart
 import SleepTipsCard from "@/components/client/sleepTracking/SleepTipCard"
 import LogSleepCard from "@/components/client/sleepTracking/LogSleepCard"
 import { useWeeklySleepReport } from "@/hooks/client/nutrition/useSleep"
+import ClientLayout from "@/components/client/layout/ClientLayout"
 
 export default function SleepDashboard() {
   const { data, isLoading } = useWeeklySleepReport()
@@ -13,6 +14,12 @@ export default function SleepDashboard() {
       : null
 
   return (
+    <ClientLayout
+      headerProps={{
+        userName: "Client",
+        location: "Training Plans",
+      }}
+    >
     <div className="space-y-6">
       <LogSleepCard />
 
@@ -25,5 +32,6 @@ export default function SleepDashboard() {
       <WeeklySleepChart />
       <SleepTipsCard />
     </div>
+    </ClientLayout>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useWorkoutCategories } from "@/hooks/client/workout/useWorkout";
 import { useNavigate } from "react-router-dom";
+import ClientLayout from "@/components/client/layout/ClientLayout";
 
 export default function WorkoutCategories() {
   const [page, setPage] = useState(1);
@@ -30,6 +31,7 @@ export default function WorkoutCategories() {
   
 
   return (
+    <ClientLayout>
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Workout Categories</h1>
 
@@ -74,5 +76,6 @@ export default function WorkoutCategories() {
         </button>
       </div>
     </div>
+    </ClientLayout>
   );
 }

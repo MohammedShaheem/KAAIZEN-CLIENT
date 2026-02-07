@@ -13,11 +13,15 @@ import TrainerPublicRoute from "@/protected/trainer/TrainerPublicRoutes";
 import TrainerOnboardingMain from "@/pages/trainer/onboarding/TrainerOnboardingMAin";
 import Dashboard from "@/pages/trainer/dashboard/dashboard";
 
+import TrainerSessionsPage from "@/pages/trainer/personaltraining/TrainerSessionsPage";
+import TrainerSessionDetailPage from "@/pages/trainer/personaltraining/TrainerSessionDetailPage";
+
+import TrainerProfilePage from "@/pages/trainer/profile/profilePage";
 export default function TrainerRoutes() {
   return (
     <Routes>
 
-      {/* ---------- PUBLIC ROUTES ---------- */}
+      
       <Route element={<TrainerPublicRoute />}>
         <Route index element={<Navigate to="login" replace />} />
         <Route path="login" element={<TrainerLogin />} />
@@ -28,15 +32,25 @@ export default function TrainerRoutes() {
         <Route path="reset-password" element={<TrainerResetPassword />} />
       </Route>
 
-      {/* ---------- PROTECTED ROUTES ---------- */}
+      
       <Route element={<TrainerProtectedRoute />}>
-        <Route path="trainer_onboarding" element={<TrainerOnboardingMain />} />
-        <Route path="trainer_dashboard" element={<Dashboard />} />
+        <Route path="onboarding" element={<TrainerOnboardingMain />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="profile" element={<TrainerProfilePage />} />
+        <Route path="sessions" element={<TrainerSessionsPage />} />
+        <Route
+          path="sessions/:sessionId"
+          element={<TrainerSessionDetailPage />}
+        />
+
+        
+        <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Route>
 
-      {/* ---------- FALLBACK ---------- */}
-      <Route path="*" element={<Navigate to="login" replace />} />
+      
+      <Route path="*" element={<Navigate to="/trainer/login" replace />} />
 
     </Routes>
   );
 }
+

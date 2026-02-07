@@ -12,6 +12,9 @@ import TrainerVerificationList from "@/pages/admin/trainers/TrainerVerificationL
 import TrainerVerificationDetail from "@/pages/admin/trainers/TrainerVerificationDetail";
 import AdminWorkoutCategoryList from "@/pages/admin/workout/workoutCategory/AdminWokoutCategoryList";
 import AdminWorkoutVideoList from "@/pages/admin/workout/workoutCategory/AdminWorkoutVideoList";
+import AddWorkoutPlan from "@/pages/admin/plan/AddWorkoutPlan";
+import TrainingPlansList from "@/pages/admin/plan/TrainingPlansList";
+import TrainingPlanDetail from "@/pages/admin/plan/TrainingPlanDetail";
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -34,6 +37,11 @@ export default function AdminRoutes() {
           <Route path="trainers/verification/:id"element={<TrainerVerificationDetail />}/>
           <Route path="workouts/categories"element={<AdminWorkoutCategoryList />}/>
           <Route path="workouts/workoutvideos"element={<AdminWorkoutVideoList />}/>
+          <Route path="plans" element={<TrainingPlansList />}>
+          <Route path="addplans" element={<AddWorkoutPlan />} />
+          <Route path="plandetail/:planId" element={<TrainingPlanDetail />} />
+          </Route>
+
 
         
         

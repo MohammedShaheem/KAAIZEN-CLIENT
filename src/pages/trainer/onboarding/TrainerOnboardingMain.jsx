@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TrainerOnboardingStep1 from "@/components/trainer/profile/TrainerOnboardingStep1";
@@ -8,6 +6,7 @@ import { createTrainerProfile } from "@/services/trainer/trainers";
 
 export default function TrainerOnboardingMain() {
   const [currentStep, setCurrentStep] = useState(1);
+
   const [formData, setFormData] = useState({
     full_name: "",
     date_of_birth: "",
@@ -15,14 +14,18 @@ export default function TrainerOnboardingMain() {
     bio: "",
     experience_certificate: "",
     skills: [],
+    shift_type: "both", 
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+  
   const updateFormData = (updates) => {
     setFormData((prev) => ({ ...prev, ...updates }));
+
+    
     setErrors((prev) => {
       const next = { ...prev };
       Object.keys(updates).forEach((k) => delete next[k]);
@@ -30,6 +33,7 @@ export default function TrainerOnboardingMain() {
     });
   };
 
+  
   const handleNext = (stepData) => {
     updateFormData(stepData);
     setCurrentStep((prev) => prev + 1);
@@ -39,19 +43,27 @@ export default function TrainerOnboardingMain() {
     setCurrentStep((prev) => prev - 1);
   };
 
+  
   const handleComplete = async (stepData) => {
     const payload = { ...formData, ...stepData };
     setIsSubmitting(true);
+
     try {
       await createTrainerProfile(payload);
-      navigate("/trainer/trainer_dashboard", { replace: true });
+      navigate("/trainer/dashboard", { replace: true });
     } catch (err) {
-      setErrors({ general: "Failed to create trainer profile." });
+      
+      if (err?.response?.data) {
+        setErrors(err.response.data);
+      } else {
+        setErrors({ general: "Failed to create trainer profile." });
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  
   if (currentStep === 1) {
     return (
       <TrainerOnboardingStep1
