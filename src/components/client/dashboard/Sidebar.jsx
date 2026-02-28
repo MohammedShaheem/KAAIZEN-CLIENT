@@ -29,7 +29,7 @@ const Sidebar = () => {
     { icon: Clock, label: "History" },
     { icon: CheckCircle, label: "Progress", path: "/profile" },
     { icon: Briefcase, label: "Plans", key: "plans" }, 
-    { icon: MessageCircle, label: "Messages" },
+    { icon: MessageCircle, label: "Messages",path:"/ai-plan" },
   ];
 
   const handleLogout = () => {

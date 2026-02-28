@@ -21,7 +21,7 @@ export const WorkoutExperience = [
 ];
 
 export const PreferredWorkoutType = [
-  { value: "strength", label: "Strength Training" },
+  { value: "strength_training", label: "Strength Training" },
   { value: "cardio", label: "Cardio" },
   { value: "yoga", label: "Yoga" },
   { value: "hiit", label: "HIIT" },

@@ -32,3 +32,13 @@ export const getTrainerDashboard = async () => {
   const response = await api.get("/api/trainers/dashboard/");
   return response.data;
 };
+
+export const getTrainerLeaves = async () => {
+  const { data } = await api.get("/api/trainers/leave/");
+  return data ?? [];
+};
+
+export const createTrainerLeave = async (payload) => {
+  const { data } = await api.post("/api/trainers/leave/", payload);
+  return data;
+};

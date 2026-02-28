@@ -1,11 +1,13 @@
 import { useParams } from "react-router-dom";
 import { useTrainerSessionDetail } from "@/hooks/trainer/personaltraining/useTrainerSessions";
 import Sidebar from "@/components/trainer/ui/sidebar";
+import { useNavigate } from "react-router-dom";
 
 const TrainerSessionDetailPage = () => {
   const { sessionId } = useParams();
   const { data, isLoading, isError } =
     useTrainerSessionDetail(sessionId);
+  const navigate = useNavigate()
 
   if (isLoading) {
     return <div className="p-6">Loading session…</div>;
@@ -118,6 +120,9 @@ const TrainerSessionDetailPage = () => {
 
       
       <button
+        onClick={() =>
+          navigate(`/trainer/sessions/${sessionId}/video`)
+        }
         className="fixed bottom-6 right-6 bg-black text-white px-6 py-3 rounded-lg shadow-lg hover:bg-gray-900 transition"
       >
         Start Session

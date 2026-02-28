@@ -4,6 +4,9 @@ import { getClientPlan, createClientPlan } from "@/services/personal_training/Pe
 // import { clientTrainerAssignment } from "@/services/personal_training/PersonalTraining";
 import { selectSessionType,selectSessionSlot,selectTrainer,confirmAssignment,} from "@/services/personal_training/PersonalTraining";
 import { getClientCurrentPlan } from "@/services/personal_training/PersonalTraining";
+import { selectStartDate } from "@/services/personal_training/PersonalTraining";
+import { createCheckoutSession } from "@/services/personal_training/PersonalTraining";
+
 export function usePublicPlans() {
   return useQuery({
     queryKey: ["publicTrainingPlans"], 
@@ -63,6 +66,12 @@ export function useSelectTrainer() {
   });
 }
 
+export function useSelectStartDate() {
+  return useMutation({
+    mutationFn: selectStartDate,
+  });
+}
+
 export function useConfirmAssignment() {
   const queryClient = useQueryClient();
 
@@ -90,3 +99,14 @@ export function useClientCurrentPlan() {
   });
 }
 
+export function useCreateCheckoutSession() {
+  return useMutation({
+    mutationFn: createCheckoutSession,
+
+    onSuccess: (data) => {
+        if (data?.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    },
+  });
+}

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useClientCurrentPlan } from "@/hooks/client/personaltraining/publicPlan";
 import { Spinner } from "@/components/common/Spinner";
 import ClientLayout from "@/components/client/layout/ClientLayout";
@@ -8,7 +10,7 @@ const PAGE_SIZE = 5;
 const ClientCurrentPlanPage = () => {
   const { data, isLoading, isError, error } = useClientCurrentPlan();
   const [page, setPage] = useState(1);
-
+  const navigate = useNavigate();
   if (isLoading) {
     return (
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,9 +30,31 @@ const ClientCurrentPlanPage = () => {
     return <div className="p-6 text-red-500">Something went wrong.</div>;
   }
 
+  
+  if (!data?.plan) {
+    return (
+      <ClientLayout
+        headerProps={{
+          userName: "Client",
+          location: "Training Plans",
+        }}
+      >
+        <div className="p-6">
+          <div className="bg-white rounded-xl shadow p-10 text-center">
+            <h2 className="text-xl font-semibold mb-2">
+              No Active Plan
+            </h2>
+            <p className="text-gray-600">
+              You don’t have an active training plan yet.
+            </p>
+          </div>
+        </div>
+      </ClientLayout>
+    );
+  }
+
   const { plan, trainer, assignment, sessions = [] } = data;
 
-  // ---- Sessions logic ----
   const sortedSessions = [...sessions].sort(
     (a, b) => new Date(a.session_date) - new Date(b.session_date)
   );
@@ -43,9 +67,9 @@ const ClientCurrentPlanPage = () => {
     (s) => s.status === "completed"
   ).length;
 
-  const progressPercent = Math.round(
-    (completedCount / sortedSessions.length) * 100
-  );
+  const progressPercent = sortedSessions.length
+    ? Math.round((completedCount / sortedSessions.length) * 100)
+    : 0;
 
   const paginatedSessions = sortedSessions.slice(
     (page - 1) * PAGE_SIZE,
@@ -53,6 +77,19 @@ const ClientCurrentPlanPage = () => {
   );
 
   const totalPages = Math.ceil(sortedSessions.length / PAGE_SIZE);
+
+  const canJoinSession = (session) => {
+  const now = new Date();
+
+  const sessionStart = new Date(
+    `${session.session_date}T${session.start_time}`
+  );
+
+  
+  const joinWindow = new Date(sessionStart.getTime() - 10 * 60 * 1000);
+
+  return now >= joinWindow;
+};
 
   return (
     <ClientLayout
@@ -62,9 +99,7 @@ const ClientCurrentPlanPage = () => {
       }}
     >
       <div className="p-6 space-y-6">
-        {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Plan */}
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-xl font-semibold mb-3">Your Plan</h2>
 
@@ -80,7 +115,6 @@ const ClientCurrentPlanPage = () => {
               </p>
             </div>
 
-            {/* Progress */}
             <div className="mt-4">
               <div className="flex justify-between text-xs mb-1">
                 <span>Progress</span>
@@ -95,7 +129,6 @@ const ClientCurrentPlanPage = () => {
             </div>
           </div>
 
-          {/* Trainer */}
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-xl font-semibold mb-3">Your Trainer</h2>
 
@@ -116,18 +149,27 @@ const ClientCurrentPlanPage = () => {
           </div>
         </div>
 
-        {/* Next Session */}
         {upcomingSession && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <p className="font-medium text-blue-800">Next Session</p>
-            <p className="text-sm">
-              {upcomingSession.session_date} ·{" "}
-              {upcomingSession.start_time} – {upcomingSession.end_time}
-            </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center">
+            <div>
+              <p className="font-medium text-blue-800">Next Session</p>
+              <p className="text-sm">
+                {upcomingSession.session_date} ·{" "}
+                {upcomingSession.start_time} – {upcomingSession.end_time}
+              </p>
+            </div>
+
+            <button
+              onClick={() =>
+                navigate(`/sessions/${upcomingSession.id}/video`)
+              }
+              className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+            >
+              Start Session
+            </button>
           </div>
         )}
 
-        {/* All Sessions */}
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-xl font-semibold mb-4">All Sessions</h2>
 
@@ -149,7 +191,6 @@ const ClientCurrentPlanPage = () => {
                 </span>
               </div>
 
-              {/* ✅ Added controls */}
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-500">
                   Used 0 out of 4
@@ -162,7 +203,6 @@ const ClientCurrentPlanPage = () => {
             </div>
           ))}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-4 flex justify-end gap-2">
               <button

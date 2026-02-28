@@ -3,6 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, lazy, Suspense } from "react";
 import { refreshSession } from "./features/auth/authSlice";
 import { Spinner } from "./components/common/Spinner";
+
+import { getDeviceToken } from "./notifications/notifications";
+
+
 const ClientRoutes = lazy(() => import("@/routes/ClientRoutes"));
 const AdminRoutes = lazy(() => import("@/routes/AdminRoutes"));
 const TrainerRoutes = lazy(() => import("@/routes/TrainerRoutes"));
