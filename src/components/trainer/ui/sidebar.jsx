@@ -5,6 +5,7 @@ import {
   Wallet,
   Contact,
   LogOut,
+  CalendarCheck
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -12,8 +13,9 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/trainer/dashboard" },
   { icon: Calendar, label: "Sessions", path: "/trainer/sessions" },
   { icon: Users, label: "Clients", path: "clients" },
-  { icon: Wallet, label: "Earnings", path: "earnings" },
+  { icon: Wallet, label: "Earnings", path: "" },
   { icon: Contact, label: "Profile", path: "/trainer/profile" },
+  { icon: CalendarCheck,label: "Leaves",path: "/trainer/leaves" },
 ];
 
 export default function Sidebar({ logout, userName = "Trainer" }) {

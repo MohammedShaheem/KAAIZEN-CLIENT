@@ -5,7 +5,7 @@ export function useTrainerDashboard() {
   return useQuery({
     queryKey: ["trainerDashboard"],
     queryFn: getTrainerDashboard,
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60 * 5,
     retry: false,
   });
 }

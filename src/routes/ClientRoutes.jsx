@@ -20,6 +20,11 @@ import PublicTrainingPlans from "@/pages/client/personaltraining/PublicTrainingP
 import PublicTrainingPlanDetail from "@/pages/client/personaltraining/PublicTrainingPlanDetail ";
 import BookingPage from "@/pages/client/personaltraining/bookingPage";
 import ClientCurrentPlanPage from "@/pages/client/personaltraining/clientCurrentPlanPage";
+import AIPlanPage from "@/pages/client/AIplan/AIPlanPage";
+import PaymentSuccess from "@/pages/client/personaltraining/paymentSucess";
+import PaymentCancel from "@/pages/client/personaltraining/paymentCancel";
+import ClientVideoCallPage from "@/pages/client/personaltraining/ClientVideoCallPAge";
+
 export default function ClientRoutes() {
   return (
     <Routes>
@@ -46,6 +51,10 @@ export default function ClientRoutes() {
         <Route path="/training-plans/:planId"element={<PublicTrainingPlanDetail />}/>
         <Route path="/booking"element={<BookingPage />}/>
         <Route path="/current-plan"element={<ClientCurrentPlanPage />}/>
+        <Route path="/ai-plan"element={<AIPlanPage />}/>
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        <Route path="/sessions/:sessionId/video" element={<ClientVideoCallPage />}/>
 
         
       </Route>

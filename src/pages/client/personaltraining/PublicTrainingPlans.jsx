@@ -13,9 +13,7 @@ const PublicTrainingPlans = () => {
     error,
   } = usePublicPlans();
 
-  // ------------------------------
-  // Loading
-  // ------------------------------
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -24,9 +22,7 @@ const PublicTrainingPlans = () => {
     );
   }
 
-  // ------------------------------
-  // Error
-  // ------------------------------
+  
   if (isError) {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-red-50 border border-red-200 rounded-xl text-center">
@@ -37,9 +33,7 @@ const PublicTrainingPlans = () => {
     );
   }
 
-  // ------------------------------
-  // Empty
-  // ------------------------------
+  
   if (plans.length === 0) {
     return (
       <div className="max-w-xl mx-auto mt-10 p-6 bg-gray-50 border border-gray-200 rounded-xl text-center">
@@ -50,9 +44,7 @@ const PublicTrainingPlans = () => {
     );
   }
 
-  // ------------------------------
-  // UI
-  // ------------------------------
+  
   return (
     <ClientLayout
       headerProps={{
@@ -71,7 +63,7 @@ const PublicTrainingPlans = () => {
           </p>
         </div>
 
-        {/* Plans */}
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
             <div

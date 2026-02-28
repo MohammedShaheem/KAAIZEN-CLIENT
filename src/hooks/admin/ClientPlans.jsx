@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPlan, createPlan,getPlanDetail,updatePlanStatus } from '../../services/admin/personaltraining/PersonalTraining'
 
-export function useClientPlans() {
+export function useClientPlans(params) {
   return useQuery({
-    queryKey: ["clientPlans"],
-    queryFn: getPlan,
-    staleTime: 1000 * 60 * 5,
+    queryKey: ["clientPlans", params],
+    queryFn: () => getPlan(params),
+    keepPreviousData: true,
   });
 }
-
 export function useCreateClientPlan() {
   const queryClient = useQueryClient();
 

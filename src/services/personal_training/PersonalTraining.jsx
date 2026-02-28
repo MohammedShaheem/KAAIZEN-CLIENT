@@ -47,6 +47,22 @@ export const getClientPlan = async () => {
   }
 };
 
+export const createCheckoutSession = async (values) => {
+  try {
+    const { data } = await api.post(
+      "/api/personaltraining/payments/checkout/",
+      values
+    );
+
+    return data; 
+
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.detail
+    );
+  }
+};
+
 export const createClientPlan = async (values) => {
   try {
     const response = await api.post(
@@ -102,6 +118,18 @@ export const selectTrainer = async (values) => {
   }
 };
 
+export const selectStartDate = async (values) => {
+  try {
+    const { data } = await api.post(
+      "/api/personaltraining/select-startdate/",
+      values
+    );
+    return data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || DEFAULT_ERROR);
+  }
+};
+
 
 export const confirmAssignment = async () => {
   try {
@@ -111,6 +139,7 @@ export const confirmAssignment = async () => {
     );
     return data;
   } catch (error) {
+    console.log("CONFIRM ERROR:", error.response?.data);
     throw new Error(error.response?.data?.detail || DEFAULT_ERROR);
   }
 };
@@ -137,3 +166,35 @@ export const getTrainerSessionDetail = async (sessionId) => {
   );
   return response.data;
 };
+
+export const getSessionVideoToken = async (sessionId) => {
+  if (!sessionId) {
+    throw new Error("Session ID is required");
+  }
+
+  try {
+    const response = await api.get(
+      `/api/personaltraining/sessions/${sessionId}/video-token/`,
+      {
+        withCredentials: true,
+      }
+    
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching session video token:", error);
+
+    const message =
+      error.response?.data?.detail ||
+      "Failed to fetch video token";
+
+    throw new Error(message);
+  }
+};
+
+
+
+
+
+

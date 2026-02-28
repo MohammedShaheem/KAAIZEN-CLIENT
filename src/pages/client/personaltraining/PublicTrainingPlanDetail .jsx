@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   Calendar,
   DollarSign,
@@ -6,12 +6,14 @@ import {
   Clock,
   Repeat,
 } from "lucide-react";
-import { usePublicPlanDetail,useCreateClientPlan } from "@/hooks/client/personaltraining/publicPlan";
+import {
+  usePublicPlanDetail,
+} from "@/hooks/client/personaltraining/publicPlan";
+import { useCreateCheckoutSession } from "@/hooks/client/personaltraining/publicPlan";
 import ClientLayout from "@/components/client/layout/ClientLayout";
 
 const PublicTrainingPlanDetail = () => {
   const { planId } = useParams();
-  const navigate = useNavigate();
 
   const {
     data: plan,
@@ -20,7 +22,7 @@ const PublicTrainingPlanDetail = () => {
     error,
   } = usePublicPlanDetail(planId);
 
-  const createPlanMutation = useCreateClientPlan();
+  const checkoutMutation = useCreateCheckoutSession();
 
   if (isLoading) {
     return (
@@ -50,19 +52,9 @@ const PublicTrainingPlanDetail = () => {
 
   
   const handleChoosePlan = () => {
-    const today = new Date().toISOString().split("T")[0];
-
-    createPlanMutation.mutate(
-      {
-        plan_id: plan.id,
-        start_date: today,
-      },
-      {
-        onSuccess: () => {
-          navigate("/booking");
-        },
-      }
-    );
+    checkoutMutation.mutate({
+      plan_id: plan.id,
+    });
   };
 
   return (
@@ -74,7 +66,7 @@ const PublicTrainingPlanDetail = () => {
     >
       <div className="max-w-5xl mx-auto p-6">
         <Link
-          to="/booking"
+          to="/training-plans"
           className="inline-flex items-center text-purple-600 hover:underline mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -128,10 +120,10 @@ const PublicTrainingPlanDetail = () => {
             <button
               className="px-10 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors"
               onClick={handleChoosePlan}
-              disabled={createPlanMutation.isPending}
+              disabled={checkoutMutation.isPending}
             >
-              {createPlanMutation.isPending
-                ? "Creating..."
+              {checkoutMutation.isPending
+                ? "Redirecting to Payment..."
                 : "Choose This Plan"}
             </button>
           </div>
