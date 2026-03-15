@@ -10,8 +10,8 @@ import TrainerResetPassword from "@/pages/trainer/auth/TrainerResetPassword";
 import TrainerProtectedRoute from "@/protected/trainer/TrainerProtected";
 import TrainerPublicRoute from "@/protected/trainer/TrainerPublicRoutes";
 
-import TrainerOnboardingMain from "@/pages/trainer/onboarding/TrainerOnboardingMAin";
-import Dashboard from "@/pages/trainer/dashboard/dashboard";
+import TrainerOnboardingMain from "@/pages/trainer/onboarding/TrainerOnboardingMain";
+import Dashboard from "@/pages/trainer/dashboard/Dashboard";
 
 import TrainerSessionsPage from "@/pages/trainer/personaltraining/TrainerSessionsPage";
 import TrainerSessionDetailPage from "@/pages/trainer/personaltraining/TrainerSessionDetailPage";

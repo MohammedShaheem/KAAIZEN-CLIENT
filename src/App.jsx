@@ -13,8 +13,13 @@ const TrainerRoutes = lazy(() => import("@/routes/TrainerRoutes"));
 
 export default function App() {
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.auth);
+
+  const { isLoading, user } = useSelector((state) => state.auth);
+  
   const hasDispatched = useRef(false);
+  const tokenInitialized = useRef(false);
+
+
 
   useEffect(() => {
     if (!hasDispatched.current) {
@@ -22,6 +27,16 @@ export default function App() {
       dispatch(refreshSession());
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!isLoading && user && !tokenInitialized.current) {
+      tokenInitialized.current = true;
+      getDeviceToken();
+    }
+  }, [isLoading, user]);
+
+
+
 
   if (isLoading) {
     return <Spinner loading size={64} />;

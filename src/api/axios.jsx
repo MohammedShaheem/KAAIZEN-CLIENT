@@ -3,10 +3,10 @@ import Cookies from "js-cookie";
 
 
 
-const API_BASE = "http://localhost:8000";
+
     
 const api = axios.create({  
-    baseURL: API_BASE,
+    baseURL: process.env.REACT_APP_API_URL,
     withCredentials: true,
     headers:{
         "Content-Type":"application/json",

@@ -4,6 +4,7 @@ import SleepTipsCard from "@/components/client/sleepTracking/SleepTipCard"
 import LogSleepCard from "@/components/client/sleepTracking/LogSleepCard"
 import { useWeeklySleepReport } from "@/hooks/client/nutrition/useSleep"
 import ClientLayout from "@/components/client/layout/ClientLayout"
+import ReminderToggle from "@/components/notification/client/ReminderToggle"
 
 export default function SleepDashboard() {
   const { data, isLoading } = useWeeklySleepReport()
@@ -28,6 +29,7 @@ export default function SleepDashboard() {
       ) : (
         <MySleepCard latest={latest} />
       )}
+      <ReminderToggle reminderType="sleep" />
 
       <WeeklySleepChart />
       <SleepTipsCard />

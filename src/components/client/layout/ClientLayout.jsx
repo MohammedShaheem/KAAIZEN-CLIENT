@@ -88,7 +88,7 @@ const ClientLayout = ({
         "--tooltip-bg": t.tooltipBg,
         "--logo-bg": t.logoBg,
 
-        "--text-accent": t.textAccent,
+        
         "--profile-name": t.profileName,
         "--profile-subtext": t.profileSubtext,
         "--profile-hover": t.profileHover,
