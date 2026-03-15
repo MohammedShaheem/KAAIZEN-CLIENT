@@ -1,0 +1,38 @@
+```
+
+---
+
+### STEP 5 — Create `.dockerignore` (in frontend root)
+```
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build output
+build/
+dist/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+```
+
+---

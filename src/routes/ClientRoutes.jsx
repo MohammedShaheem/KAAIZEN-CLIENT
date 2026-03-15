@@ -23,7 +23,7 @@ import ClientCurrentPlanPage from "@/pages/client/personaltraining/clientCurrent
 import AIPlanPage from "@/pages/client/AIplan/AIPlanPage";
 import PaymentSuccess from "@/pages/client/personaltraining/paymentSucess";
 import PaymentCancel from "@/pages/client/personaltraining/paymentCancel";
-import ClientVideoCallPage from "@/pages/client/personaltraining/ClientVideoCallPAge";
+import ClientVideoCallPage from "@/pages/client/personaltraining/ClientVideoCallPage";
 
 export default function ClientRoutes() {
   return (

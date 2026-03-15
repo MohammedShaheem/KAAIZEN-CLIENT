@@ -2,7 +2,7 @@ import api from "@/api/axios";
 
 export const saveDeviceToken = async (token) => {
   try {
-    const response = await api.post("/api/save-device-token/", {
+    const response = await api.post("/api/notification/save-device-token/", {
       token,
     });
 
