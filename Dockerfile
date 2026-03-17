@@ -1,3 +1,4 @@
+# ----------- BUILD STAGE -----------
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -9,17 +10,18 @@ COPY . .
 RUN npm run build
 
 
+# ----------- PRODUCTION STAGE -----------
+FROM nginx:alpine
 
-FROM node:20-alpine
+# Remove default nginx config
+RUN rm -rf /etc/nginx/conf.d/default.conf
 
-WORKDIR /app
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copy build files
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-RUN npm install -g serve
+EXPOSE 80
 
-
-COPY --from=builder /app/dist ./dist
-
-EXPOSE 3000
-
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]
