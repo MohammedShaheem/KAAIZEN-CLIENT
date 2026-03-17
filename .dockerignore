@@ -1,9 +1,4 @@
-```
 
----
-
-### STEP 5 — Create `.dockerignore` (in frontend root)
-```
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -33,6 +28,3 @@ Dockerfile
 # OS
 .DS_Store
 Thumbs.db
-```
-
----
