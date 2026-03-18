@@ -24,8 +24,12 @@ jobs:
 
     - name: Build Frontend Image
       run: |
-        docker build -t frontend .       
+        docker build \
+          --build-arg VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }} \
+          -t frontend .
+
         docker tag frontend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/kaaizen-frontend:latest
+
 
     - name: Push Frontend Image
       run: |

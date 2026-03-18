@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import ClientLayout from "@/components/client/layout/ClientLayout";
 import TrackingGrid from "@/components/client/dashboard/trackings/TrackingGrid";
 import UserProfileCard from "@/components/client/dashboard/UserProfile";
@@ -9,168 +8,232 @@ import MonthlyProgress from "@/components/client/dashboard/charts/MonthlyProgres
 import WorkoutHistory from "@/components/client/dashboard/charts/WokoutHistoryTable";
 import { Flame, Zap } from "lucide-react";
 import { Spinner } from "@/components/common/Spinner";
-import { getDailySummary } from "@/services/client/meals";
-import { useClientProfile } from "@/hooks/client/profile/useClientProfile";
+import { useClientProfile } from "@/hooks/client/dashboard/useClientProfile";
+import { useDailySummary } from "@/hooks/client/nutrition/useMeals";
+
+
+const cmToFeetInches = (cm) => {
+  if (!cm) return { feet: 0, inches: 0 };
+  const totalInches = cm / 2.54;
+  return {
+    feet: Math.floor(totalInches / 12),
+    inches: Math.round(totalInches % 12),
+  };
+};
+
+const calculateAge = (dobString) => {
+  if (!dobString) return null;
+  const dob = new Date(dobString);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age > 0 ? age : null;
+};
+
+const getTodayISO = () => new Date().toISOString().split("T")[0];
+
+const GOAL_CONFIG = {
+  weight_loss: { icon: Flame, title: "Weight Loss", color: "#ff6b35" },
+  muscle_gain: { icon: Zap,   title: "Muscle Gain", color: "#06b6d4" },
+  general_fitness: { icon: Zap, title: "General Fitness", color: "#06b6d4" },
+};
+
+const deriveGoals = (profile) => {
+  if (!profile) return [];
+  const key = profile.fitness_goal;
+  const config = GOAL_CONFIG[key] ?? { icon: Zap, title: key ?? "Fitness", color: "#06b6d4" };
+  const goalDisplayMap = {
+    weight_loss: { goal: `${profile.weight_kg ?? 0} kg current`, percentage: 60 },
+    muscle_gain: { goal: "70 kg / 80 kg", percentage: 79 },
+  };
+  const display = goalDisplayMap[key] ?? { goal: "In Progress", percentage: 0 };
+  return [{ ...config, ...display }];
+};
+
+// ─── Today's Nutrition Summary Card ──────────────────────────────────────────
+
+const MACRO_CONFIG = [
+  { key: "total_calories", label: "Calories", unit: "kcal", color: "bg-orange-100 text-orange-600", bar: "bg-orange-400", max: 2000 },
+  { key: "protein",        label: "Protein",  unit: "g",    color: "bg-blue-100 text-blue-600",   bar: "bg-blue-400",   max: 100  },
+  { key: "carbs",          label: "Carbs",    unit: "g",    color: "bg-yellow-100 text-yellow-600", bar: "bg-yellow-400", max: 100 },
+  { key: "fat",            label: "Fat",      unit: "g",    color: "bg-red-100 text-red-600",     bar: "bg-red-400",    max: 100  },
+];
+
+function TodayNutritionSummary({ dailySummary, isLoading, isError }) {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm h-full">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-lg font-semibold text-gray-900">Today's Nutrition</h3>
+        <span className="text-xs text-gray-400">
+          {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+        </span>
+      </div>
+
+      {isLoading && (
+        <div className="flex justify-center items-center h-32">
+          <Spinner />
+        </div>
+      )}
+
+      {isError && !isLoading && (
+        <p className="text-sm text-red-400 text-center py-8">
+          Could not load nutrition data.
+        </p>
+      )}
+
+      {!isLoading && !isError && (
+        <div className="space-y-4">
+          {MACRO_CONFIG.map(({ key, label, unit, color, bar, max }) => {
+            const value = dailySummary?.[key] ?? 0;
+            return (
+              <div key={label}>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium text-gray-600">{label}</span>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
+                    {Number(value).toFixed(1)} {unit}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div
+                    className={`h-1.5 rounded-full ${bar}`}
+                    style={{ width: `${Math.min((value / max) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+
+          {!dailySummary && (
+            <p className="text-sm text-gray-400 text-center pt-4">
+              No meals logged today yet.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Error State ──────────────────────────────────────────────────────────────
+
+function DashboardError({ message, onRetry }) {
+  return (
+    <ClientLayout>
+      <div className="flex flex-col justify-center items-center h-64 gap-4">
+        <p className="text-red-500 text-center font-medium">
+          {message || "Something went wrong. Please try again."}
+        </p>
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    </ClientLayout>
+  );
+}
+
+// ─── Loading State ────────────────────────────────────────────────────────────
+
+function DashboardLoading() {
+  return (
+    <ClientLayout>
+      <div className="flex justify-center items-center h-64">
+        <Spinner />
+      </div>
+    </ClientLayout>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ClientDashboard() {
- 
+  const today = getTodayISO();
+
   const {
     data: profile,
-    isLoading: loading,
-    error,
+    isLoading: profileLoading,
+    isError: profileError,
+    error: profileErrorData,
+    refetch: refetchProfile,
   } = useClientProfile();
 
-  
-  const [favoriteWorkouts, setFavoriteWorkouts] = useState([]);
-  const [recentWorkouts, setRecentWorkouts] = useState([]);
-  const [dietItems, setDietItems] = useState([]);
-  const [workoutHistory, setWorkoutHistory] = useState([]);
-  const [dailySummary, setDailySummary] = useState(null);
+  const {
+    data: dailySummary,
+    isLoading: summaryLoading,
+    isError: summaryError,
+  } = useDailySummary(today);
 
-  const cm = profile?.height_cm || 0;
-  const totalInches = cm / 2.54;
-  const feet = Math.floor(totalInches / 12);
-  const inches = Math.round(totalInches % 12);
+  // ── Derived display values ────────────────────────────────────────────────
 
-  const calculateAge = (dobString) => {
-    if (!dobString) return null;
-    const dob = new Date(dobString);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-    return age > 0 ? age : null;
-  };
+  const { feet, inches } = cmToFeetInches(profile?.height_cm);
+  const age = calculateAge(profile?.date_of_birth);
+  const goals = deriveGoals(profile);
 
-  
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const today = new Date().toISOString().split("T")[0];
-        const summary = await getDailySummary(today);
-        setDailySummary(summary);
-      } catch (err) {
-        console.error("Failed to fetch daily summary", err);
-      }
-    };
-
-    fetchSummary();
-  }, []);
-
-  
-  const deriveGoals = (fitnessGoal) => {
-    const goalMap = {
-      weight_loss: {
-        icon: Flame,
-        title: "Weight Loss",
-        goal: `${profile?.weight_kg || 0}kg / 100kg`,
-        percentage: 60,
-        color: "#ff6b35",
-      },
-      muscle_gain: {
-        icon: Zap,
-        title: "Muscle Gain",
-        goal: "70kg / 80kg",
-        percentage: 79,
-        color: "#06b6d4",
-      },
-      default: {
-        icon: Zap,
-        title: fitnessGoal || "General Fitness",
-        goal: "0 / 100",
-        percentage: 0,
-        color: "#06b6d4",
-      },
-    };
-
-    return [goalMap[fitnessGoal] || goalMap.default];
-  };
-
-  const goals = profile ? deriveGoals(profile.fitness_goal) : [];
-
-  
-  if (loading) {
-    return (
-      <ClientLayout>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-600">
-            <Spinner/>
-          </div>
-        </div>
-      </ClientLayout>
-    );
-  }
-
-  
-  if (error) {
-    return (
-      <ClientLayout>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-red-500 text-center">
-            <p>Error: {error.message || "Failed to load dashboard data"}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </ClientLayout>
-    );
-  }
-
-  
   const userData = {
-    name: profile?.full_name || "User",
-    weight: `${profile?.weight_kg || 0} kg`,
+    name:   profile?.full_name ?? "User",
+    weight: `${profile?.weight_kg ?? 0} kg`,
     height: `${feet} ft ${inches} in`,
-    age: `${calculateAge(profile?.date_of_birth) || 0} yrs`,
+    age:    `${age ?? 0} yrs`,
   };
+
+  // ── Guards ────────────────────────────────────────────────────────────────
+
+  if (profileLoading) return <DashboardLoading />;
+
+  if (profileError) {
+    return (
+      <DashboardError
+        message={profileErrorData?.message ?? "Failed to load profile data."}
+        onRetry={refetchProfile}
+      />
+    );
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <ClientLayout
       headerProps={{
-        userName: userData?.name || "Client",
-        location: "Meal Tracking",
-        // userImage: user?.profile_image,
+        userName: userData.name,
+        location: "Dashboard",
       }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Content - 3 columns */}
+
+        {/* ── Main Content (3 cols) ── */}
         <div className="lg:col-span-3">
           <TrackingGrid
             profile={profile}
             dailySummary={dailySummary}
+            isLoadingSummary={summaryLoading}
+            hasSummaryError={summaryError}
           />
 
-          {/* Workouts and Diet Menu */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <div>
-              <WorkoutSection
-                title="Favorite Workouts"
-                workouts={favoriteWorkouts}
-              />
-              <WorkoutSection
-                title="Recent Workouts"
-                workouts={recentWorkouts}
-              />
+              
+              {/* <WorkoutSection title="Favorite Workouts" workouts={[]} />
+              <WorkoutSection title="Recent Workouts"   workouts={[]} /> */}
             </div>
 
-            <FeaturedDietMenu
-              mealTime="Breakfast"
-              time="10:00 am"
-              items={dietItems}
-              profile={profile}
+            {/* Nutrition summary uses real data from useDailySummary */}
+            <TodayNutritionSummary
+              dailySummary={dailySummary}
+              isLoading={summaryLoading}
+              isError={summaryError}
             />
           </div>
 
-          <WorkoutHistory workouts={workoutHistory} />
+          {/* TODO: Replace with useWorkoutHistory() hook */}
+          <WorkoutHistory workouts={[]} />
         </div>
 
-        {/* Right Sidebar */}
+        {/* ── Right Sidebar ── */}
         <div>
           <UserProfileCard
             weight={userData.weight}
@@ -180,11 +243,8 @@ export default function ClientDashboard() {
             water={profile?.water_goal_ml}
           />
 
-          {/* Goals */}
           <div className="bg-white rounded-2xl p-6 shadow-sm mt-6 space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Your Goals
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">Your Goals</h3>
             {goals.map((goal, idx) => (
               <GoalProgress
                 key={idx}
@@ -198,11 +258,11 @@ export default function ClientDashboard() {
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-sm mt-6">
-            <MonthlyProgress
-              percentage={profile?.monthly_progress || 80}
-            />
+            {/* TODO: Replace with real monthly_progress once API supports it */}
+            <MonthlyProgress percentage={profile?.monthly_progress ?? 0} />
           </div>
         </div>
+
       </div>
     </ClientLayout>
   );
