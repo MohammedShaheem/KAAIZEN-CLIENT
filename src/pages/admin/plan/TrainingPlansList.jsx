@@ -32,10 +32,12 @@ const TrainingPlansList = () => {
   // Search filter
   // ------------------------------
   const filteredPlans = useMemo(() => {
-    return plans.filter((plan) =>
-      plan.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [plans, searchTerm]);
+  return Array.isArray(plans)
+    ? plans.filter((plan) =>
+        plan.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
+}, [plans, searchTerm]);
 
   // Reset page on search
   useMemo(() => {
