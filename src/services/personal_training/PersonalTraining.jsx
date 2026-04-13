@@ -193,6 +193,62 @@ export const getSessionVideoToken = async (sessionId) => {
   }
 };
 
+export const startSession = async (sessionId) => {
+  if (!sessionId) {
+    throw new Error("Session ID is required");
+  }
+
+  try {
+    const response = await api.post(
+      `/api/personaltraining/sessions/${sessionId}/start/`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error starting session:", error);
+
+    const message =
+      error.response?.data?.detail ||
+      "Failed to start session";
+
+    throw new Error(message);
+  }
+};
+
+export const endSession = async (sessionId) => {
+  if (!sessionId) {
+    throw new Error("Session ID is required");
+  }
+
+  try {
+    const response = await api.post(
+      `/api/personaltraining/sessions/${sessionId}/end/`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error ending session:", error);
+
+    const message =
+      error.response?.data?.detail ||
+      "Failed to end session";
+
+    throw new Error(message);
+  }
+};
+
+
+
 
 
 

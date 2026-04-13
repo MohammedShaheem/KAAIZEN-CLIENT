@@ -21,6 +21,8 @@ import TrainerLeavesPage from "@/pages/trainer/leave/TrainerLeavePage";
 
 import TrainerVideoCallPage from "@/pages/trainer/personaltraining/TrainerVideoCallPage";
 
+import TrainerWalletPage from "@/pages/trainer/wallet/TrainerWalletPage";
+
 export default function TrainerRoutes() {
   return (
     <Routes>
@@ -45,6 +47,7 @@ export default function TrainerRoutes() {
         <Route path="sessions/:sessionId" element={<TrainerSessionDetailPage />}/>
         <Route path="sessions/:sessionId/video"element={<TrainerVideoCallPage />}/>
         <Route path="leaves" element={<TrainerLeavesPage />}/>
+        <Route path="wallet" element={<TrainerWalletPage />}/>
 
         
         <Route path="*" element={<Navigate to="dashboard" replace />} />

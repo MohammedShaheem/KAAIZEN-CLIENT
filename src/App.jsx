@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, lazy, Suspense } from "react";
 import { refreshSession } from "./features/auth/authSlice";
 import { Spinner } from "./components/common/Spinner";
+import { Toaster } from "sonner";
 
 import { getDeviceToken } from "./notifications/notifications";
 
@@ -44,6 +45,7 @@ export default function App() {
 
   return (
     <Suspense fallback={<Spinner loading size={64} />}>
+      <Toaster position="top-right" richColors />
       <Routes>
         <Route path="/admin/*" element={<AdminRoutes />} />
         <Route path="/trainer/*" element={<TrainerRoutes />} />

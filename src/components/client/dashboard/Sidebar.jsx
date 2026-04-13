@@ -6,6 +6,7 @@ import {
   MessageCircle,
   Dumbbell,
   LogOut,
+  Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import useLogout from "@/hooks/common/useLogout";
@@ -30,6 +31,7 @@ const Sidebar = () => {
     { icon: CheckCircle, label: "Progress", path: "/profile" },
     { icon: Briefcase, label: "Plans", key: "plans" }, 
     { icon: MessageCircle, label: "Messages",path:"/ai-plan" },
+    { icon: Wallet, label: "Messages",path:"/wallet" },
   ];
 
   const handleLogout = () => {

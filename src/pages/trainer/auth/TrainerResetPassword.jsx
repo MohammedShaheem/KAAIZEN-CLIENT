@@ -1,4 +1,4 @@
-// src/pages/trainer/auth/TrainerResetPassword.jsx
+
 import React from 'react';
 import * as Yup from 'yup';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -12,12 +12,13 @@ import SubmitButton from '@/components/ui/SubmitButton';
 import AuthLink from '@/components/auth/ui/AuthLink';
 
 export default function TrainerResetPassword() {
+  console.log("Entering to the password reset page")
   const navigate = useNavigate();
   const location = useLocation();
 
   const { email, reset_token } = location.state || {};
 
-  // 🔒 Guard: must come from verify-reset-otp
+  
   if (!email || !reset_token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -40,6 +41,7 @@ export default function TrainerResetPassword() {
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
+      console.log("calling the reset password service")
       await resetPasswordRequest({
         email: values.email,
         reset_token,
@@ -48,9 +50,13 @@ export default function TrainerResetPassword() {
 
       navigate('/trainer/login', { replace: true });
     } catch (err) {
+      console.log("FULL ERROR:", err);
+      console.log("RESPONSE:", err.response);
+      console.log("DATA:", err.response?.data);
+
       setErrors({
         new_password:
-          err.response?.data?.detail || 'Failed to reset password',
+          err.response?.data?.error?.message || 'Failed to reset password',
       });
     } finally {
       setSubmitting(false);

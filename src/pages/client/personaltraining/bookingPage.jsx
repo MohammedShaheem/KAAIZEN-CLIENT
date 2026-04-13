@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "sonner";
 import SessionTypeStep from "@/components/client/personaltraining/booking/sessionTypeStep";
 import SlotSelectionStep from "@/components/client/personaltraining/booking/slotSelectionStep";
 import TrainerSelectionStep from "@/components/client/personaltraining/booking/trainerSelectionStep";
@@ -29,6 +29,11 @@ const BookingPage = () => {
   const handleSessionType = (values) => {
     sessionTypeMutation.mutate(values, {
       onSuccess: (data) => {
+        if (data?.no_trainers) {
+          toast.error(data.message);
+          return;
+        }
+
         setSlots(data.slots || []);
         setStep(2);
       },
@@ -38,6 +43,11 @@ const BookingPage = () => {
   const handleSlot = (values) => {
     slotMutation.mutate(values, {
       onSuccess: (data) => {
+        if (data?.no_trainers) {
+          toast.error(data.message);
+          return;
+        }
+
         setTrainers(data.available_trainers || []);
         setStep(3);
       },
