@@ -2,7 +2,7 @@ import api from "@/api/axios";
 
 export const getPlan = async () => {
   try {
-    const response = await api.get("api/personaltraining/admin/training-plans/");
+    const response = await api.get("/api/personaltraining/admin/training-plans/");
     return response.data;
   } catch(error) {  
     if (error.response?.status === 404) {
@@ -17,7 +17,7 @@ export const getPlan = async () => {
 
 export const createPlan = async (data) => {
   try {
-    const response = await api.post("api/personaltraining/admin/training-plans/", data);
+    const response = await api.post("/api/personaltraining/admin/training-plans/", data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.detail || "Failed to create plan");
