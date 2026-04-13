@@ -16,6 +16,9 @@ import AddWorkoutPlan from "@/pages/admin/plan/AddWorkoutPlan";
 import TrainingPlansList from "@/pages/admin/plan/TrainingPlansList";
 import TrainingPlanDetail from "@/pages/admin/plan/TrainingPlanDetail";
 import WorkoutVideoDetail from "@/pages/admin/workout/workoutVideos/WorkoutVideoDetail";
+import AdminWalletDashboard from "@/pages/admin/wallet/WalletDashboard";
+import AdminTransactionsPage from "@/pages/admin/wallet/WalletTransactionPAge";
+import AdminAllWalletsPage from "@/pages/admin/wallet/AllWalletsPage";
 
 export default function AdminRoutes() {
   return (
@@ -44,6 +47,10 @@ export default function AdminRoutes() {
           <Route path="addplans" element={<AddWorkoutPlan />} />
           <Route path="plandetail/:planId" element={<TrainingPlanDetail />} />
           </Route>
+          <Route path="wallet-dashboard" element={<AdminWalletDashboard />} />
+          <Route path="transaction-page" element={<AdminTransactionsPage />} />
+          <Route path="allwallet-page" element={<AdminAllWalletsPage/>} />
+
 
 
         

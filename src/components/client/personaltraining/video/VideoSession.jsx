@@ -1,69 +1,96 @@
 import React, { useEffect, useRef } from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
-import { getSessionVideoToken } from "@/services/personal_training/PersonalTraining";
+import { getSessionVideoToken, startSession, endSession } from "@/services/personal_training/PersonalTraining";
+import { useNavigate } from "react-router-dom";
 
 const SessionVideoCall = ({ sessionId }) => {
   const containerRef = useRef(null);
   const zpRef = useRef(null);
-
   const startedRef = useRef(false);
+  const initializingRef = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     startVideoCall();
-
-    return () => {
-      if (zpRef.current) {
-        zpRef.current.destroy();
-        zpRef.current = null;
-      }
-    };
+    return () => { cleanup(); };
   }, []);
 
+  const cleanup = async () => {
+  try {
+    if (startedRef.current) {
+      await endSession(sessionId);
+      startedRef.current = false;
+    }
+
+    
+    if (zpRef.current) {
+      const zp = zpRef.current;
+      zpRef.current = null;           
+      setTimeout(() => {
+        try { zp.destroy(); } catch (_) {}  
+      }, 300);
+    }
+
+    initializingRef.current = false;
+
+    navigate("/current-plan");
+
+  } catch (error) {
+    console.error("Cleanup error:", error);
+    navigate("/current-plan");
+  }
+};
   const startVideoCall = async () => {
-      try {
-        
-        if (zpRef.current) {
-          console.log("Already joined room");
-          return;
-        }
+    try {
+      if (zpRef.current || initializingRef.current) return;
+      initializingRef.current = true;
 
-        const data = await getSessionVideoToken(sessionId);
+      const data = await getSessionVideoToken(sessionId);
+      const { room_id, app_id, user_id, user_name } = data;
 
-        const { token, room_id, app_id, user_id, user_name } = data;
+      
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        Number(import.meta.env.VITE_ZEGO_APP_ID),  
+        import.meta.env.VITE_ZEGO_SERVER_SECRET,       
+        room_id,
+        user_id,
+        user_name || "User"
+      );
 
-        const kitToken =
-        ZegoUIKitPrebuilt.generateKitTokenForTest(
-          app_id,
-          import.meta.env.VITE_ZEGO_SERVER_SECRET, 
-          room_id,
-          user_id,
-          user_name || "User"
-        );
+      if (!initializingRef.current) return;
 
-        const zp = ZegoUIKitPrebuilt.create(kitToken);
+      const zp = ZegoUIKitPrebuilt.create(kitToken);
 
-        zpRef.current = zp; 
-
-        zp.joinRoom({
-          container: containerRef.current,
-          scenario: {
-            mode: ZegoUIKitPrebuilt.VideoConference,
-          },
-          showScreenSharingButton: true,
-          showPreJoinView: false,
-        });
-
-      } catch (error) {
-        console.error("Video call failed:", error);
+      if (!zp) {
+        console.error("Token invalid — check AppSign and AppID");
+        initializingRef.current = false;
+        return;
       }
-    };
 
-  return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100vh" }}
-    />
-  );
+      zpRef.current = zp;
+
+      if (!startedRef.current) {
+        await startSession(sessionId);
+        startedRef.current = true;
+      }
+
+      zp.joinRoom({
+        container: containerRef.current,
+        scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
+        showScreenSharingButton: true,
+        showPreJoinView: false,
+        onLeaveRoom: async () => {
+          await cleanup();
+        },
+      });
+
+    } catch (error) {
+      console.error("Video call failed:", error);
+      initializingRef.current = false;
+    }
+  };
+
+  return <div ref={containerRef} style={{ width: "100%", height: "100vh" }} />;
 };
 
 export default SessionVideoCall;

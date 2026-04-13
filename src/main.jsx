@@ -25,7 +25,7 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')).render(
   
-  <StrictMode>
+  // <StrictMode>
     <QueryClientProvider client = {queryClient}>
     <GoogleOAuthProvider clientId={clientId}>
     <Provider store={store}>
@@ -35,5 +35,5 @@ createRoot(document.getElementById('root')).render(
     </Provider>
     </GoogleOAuthProvider>
     </QueryClientProvider>
-  </StrictMode>,
+  // </StrictMode>,
 )

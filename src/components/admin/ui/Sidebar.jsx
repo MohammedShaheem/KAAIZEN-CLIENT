@@ -19,10 +19,9 @@ const menuItems = [
   { icon: Users, label: "Users", path: "clientslisting" },
   { icon: Dumbbell, label: "Trainers", path: "trainerslisting" },
   { icon: CheckCircle, label: "Verifications", path: "trainers/verification" },
-  { icon: Wallet, label: "Wallet", path: "#" },
+  { icon: Wallet, label: "Wallet", path: "wallet-dashboard" },
   { icon: ShoppingCart, label: "Orders", path: "plans/" },
   { icon: Video, label: "Workout videos", path: "workouts/workoutvideos" },
-  { icon: Apple, label: "Foods", path: "#" },
 ];
 
 export default function Sidebar({ userName = "Edwin" }) {

@@ -24,6 +24,7 @@ import AIPlanPage from "@/pages/client/AIplan/AIPlanPage";
 import PaymentSuccess from "@/pages/client/personaltraining/paymentSucess";
 import PaymentCancel from "@/pages/client/personaltraining/paymentCancel";
 import ClientVideoCallPage from "@/pages/client/personaltraining/ClientVideoCallPage";
+import ClientWalletPage from "@/pages/client/wallet/ClientWalletPage";
 
 export default function ClientRoutes() {
   return (
@@ -55,6 +56,7 @@ export default function ClientRoutes() {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/sessions/:sessionId/video" element={<ClientVideoCallPage />}/>
+        <Route path="/wallet" element={<ClientWalletPage />}/>
 
         
       </Route>
