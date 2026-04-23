@@ -12,6 +12,7 @@ import PasswordField from '@/components/auth/fields/PasswordField';
 import SubmitButton from '@/components/ui/SubmitButton';
 import AuthLink from '@/components/auth/ui/AuthLink';
 import SignupImage from '@/assets/client-images/clinet-signup-page.jpg';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Signup() {
   const dispatch = useDispatch();
@@ -56,15 +57,16 @@ export default function Signup() {
     }
     setIsSigningUp(true);
     try {
-      await clientsignupRequest({ ...values }); 
+      await clientsignupRequest({ ...values });
       setUserEmail(values.email);
       setShowOtpModal(true);
       setTimer(56);
       setOtpError('');
+      toast.success('OTP sent to your email!');
     } catch (err) {
-      setErrors({
-        email: err.response?.data?.detail || 'Signup failed. Try again',
-      });
+      const message = err.response?.data?.detail || 'Signup failed. Try again';
+      setErrors({ email: message });        
+      toast.error(message);                 
     } finally {
       setIsSigningUp(false);
       setSubmitting(false);
@@ -143,7 +145,7 @@ export default function Signup() {
 
   return (
     <AuthLayout imageSrc={SignupImage} role="client">
-      
+      <Toaster position="top-center" />
       {isSigningUp && (
         <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-40">
           <div className="flex flex-col items-center gap-4">
