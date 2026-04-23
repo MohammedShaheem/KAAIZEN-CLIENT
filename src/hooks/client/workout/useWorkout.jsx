@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getWorkoutCategories,getcategoryDetail } from "@/services/client/workouts";
+import { getWorkoutCategories,getcategoryDetail,getRecentWorkoutSessions } from "@/services/client/workouts";
 
 export function useWorkoutCategories(page) {
   return useQuery({
@@ -19,5 +19,16 @@ export function useCategoryDetail(categoryId, page) {
     enabled: !!categoryId,
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
+  });
+}
+
+
+
+
+export function useRecentWorkoutSessions() {
+  return useQuery({
+    queryKey: ["recentWorkoutSessions"],
+    queryFn: getRecentWorkoutSessions,
+    staleTime: 1000 * 60 * 5
   });
 }
