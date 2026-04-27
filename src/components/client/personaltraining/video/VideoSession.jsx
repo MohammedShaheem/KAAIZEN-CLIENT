@@ -41,43 +41,52 @@ const SessionVideoCall = ({ sessionId }) => {
   }
 };
   const startVideoCall = async () => {
-    try {
-      if (zpRef.current || initializingRef.current) return;
-      initializingRef.current = true;
+  try {
+    if (zpRef.current || initializingRef.current) return;
+    initializingRef.current = true;
 
-      const data = await getSessionVideoToken(sessionId);
-      const { room_id, app_id, token, user_id, user_name } = data;
+    const data = await getSessionVideoToken(sessionId);
+    const { room_id, user_id, user_name } = data; // only need these from backend now
 
-      const zp = ZegoUIKitPrebuilt.create(token);
+    // ✅ Generate kitToken entirely on frontend
+    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
+      Number(import.meta.env.VITE_ZEGO_APP_ID),     // must be a number
+      import.meta.env.VITE_ZEGO_SERVER_SECRET,       // server secret from .env
+      String(room_id),                               // room id from backend
+      String(user_id),                               // user id
+      String(user_name)                              // user name
+    );
 
-      if (!zp) {
-        console.error("Token invalid — check AppSign and AppID");
-        initializingRef.current = false;
-        return;
-      }
+    const zp = ZegoUIKitPrebuilt.create(kitToken);
 
-      zpRef.current = zp;
-
-      if (!startedRef.current) {
-        await startSession(sessionId);
-        startedRef.current = true;
-      }
-
-      zp.joinRoom({
-        container: containerRef.current,
-        scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
-        showScreenSharingButton: true,
-        showPreJoinView: false,
-        onLeaveRoom: async () => {
-          await cleanup();
-        },
-      });
-
-    } catch (error) {
-      console.error("Video call failed:", error);
+    if (!zp) {
+      console.error("Invalid kitToken");
       initializingRef.current = false;
+      return;
     }
-  };
+
+    zpRef.current = zp;
+
+    if (!startedRef.current) {
+      await startSession(sessionId);
+      startedRef.current = true;
+    }
+
+    zp.joinRoom({
+      container: containerRef.current,
+      scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
+      showScreenSharingButton: true,
+      showPreJoinView: false,
+      onLeaveRoom: async () => {
+        await cleanup();
+      },
+    });
+
+  } catch (error) {
+    console.error("Video call failed:", error);
+    initializingRef.current = false;
+  }
+};
 
   return <div ref={containerRef} style={{ width: "100%", height: "100vh" }} />;
 };
