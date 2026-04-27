@@ -305,6 +305,7 @@ export default function ClientDashboard() {
     error: profileErrorData,
     refetch: refetchProfile,
   } = useClientProfile();
+  console.log("profile:",profile)
 
   const {
     data: dailySummary,
@@ -359,6 +360,7 @@ export default function ClientDashboard() {
             dailySummary={dailySummary}
             isLoadingSummary={summaryLoading}
             hasSummaryError={summaryError}
+            recentSessions={recentSessions}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

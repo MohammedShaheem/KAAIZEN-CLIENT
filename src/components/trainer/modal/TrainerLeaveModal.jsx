@@ -2,8 +2,32 @@ import { useState, useEffect } from "react";
 import { useCreateTrainerLeave } from "@/hooks/trainer/leave/useTrainerLeave";
 import { Calendar, X, AlertCircle, Check } from "lucide-react";
 
+
+
+const parseApiError = (err) => {
+  const data = err?.response?.data;
+
+  if (!data) return "Failed to apply leave. Please try again.";
+
+  
+  if (Array.isArray(data)) return data[0];
+
+  if (typeof data === "object") {
+    
+    if (data.detail) return data.detail;
+    
+    if (data.non_field_errors) return data.non_field_errors[0];
+    
+    const first = Object.values(data).flat()[0];
+    if (first) return first;
+  }
+
+  return "Failed to apply leave. Please try again.";
+};
+
+
 export default function TrainerLeaveModal({ isOpen, onClose }) {
-  const { mutate, isPending, error } = useCreateTrainerLeave();
+  const { mutate, isPending } = useCreateTrainerLeave();
 
   const [formData, setFormData] = useState({
     start_date: "",
@@ -14,13 +38,10 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
   const [formError, setFormError] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  
   useEffect(() => {
     if (!isOpen) {
-      setFormData({
-        start_date: "",
-        end_date: "",
-        reason: "",
-      });
+      setFormData({ start_date: "", end_date: "", reason: "" });
       setFormError("");
       setShowConfirmation(false);
     }
@@ -29,10 +50,8 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setFormError(""); 
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = (e) => {
@@ -44,7 +63,11 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
       return;
     }
 
-    // Show confirmation dialog
+    if (formData.start_date > formData.end_date) {
+      setFormError("End date cannot be earlier than start date.");
+      return;
+    }
+
     setShowConfirmation(true);
   };
 
@@ -54,23 +77,18 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
         onClose();
       },
       onError: (err) => {
-        const message =
-          err?.response?.data?.detail ||
-          "Failed to apply leave. Please try again.";
+        const message = parseApiError(err);   
         setFormError(message);
         setShowConfirmation(false);
       },
     });
   };
 
-  const handleCancelConfirmation = () => {
-    setShowConfirmation(false);
-  };
+  const handleCancelConfirmation = () => setShowConfirmation(false);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -81,16 +99,18 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
     if (!formData.start_date || !formData.end_date) return 0;
     const start = new Date(formData.start_date);
     const end = new Date(formData.end_date);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    return diffDays;
+    return Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) + 1;
   };
+
+  const days = calculateDays();
 
   return (
     <>
+      
       <div style={overlayStyle} onClick={onClose}>
         <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
-          {/* Header */}
+
+          
           <div style={headerStyle}>
             <div style={headerTitleStyle}>
               <Calendar size={24} color="#4F46E5" />
@@ -106,10 +126,9 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
             </button>
           </div>
 
-          {/* Form */}
+         
           <form onSubmit={handleSubmit} style={formStyle}>
             <div style={formGridStyle}>
-              {/* Start Date */}
               <div style={fieldStyle}>
                 <label style={labelStyle}>
                   Start Date <span style={requiredStyle}>*</span>
@@ -124,7 +143,6 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
                 />
               </div>
 
-              {/* End Date */}
               <div style={fieldStyle}>
                 <label style={labelStyle}>
                   End Date <span style={requiredStyle}>*</span>
@@ -141,18 +159,17 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* Duration Info */}
+            
             {formData.start_date && formData.end_date && (
               <div style={durationInfoStyle}>
                 <div style={durationBadgeStyle}>
                   <span style={durationTextStyle}>
-                    Duration: {calculateDays()} day{calculateDays() > 1 ? "s" : ""}
+                    Duration: {days} day{days !== 1 ? "s" : ""}
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Reason */}
             <div style={fieldStyle}>
               <label style={labelStyle}>Reason (optional)</label>
               <textarea
@@ -165,15 +182,14 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
               />
             </div>
 
-            {/* Error Message */}
+            
             {formError && (
               <div style={errorStyle}>
-                <AlertCircle size={18} />
+                <AlertCircle size={18} style={{ flexShrink: 0 }} />
                 <span>{formError}</span>
               </div>
             )}
 
-            {/* Buttons */}
             <div style={buttonContainerStyle}>
               <button
                 type="button"
@@ -183,7 +199,6 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
               >
                 Cancel
               </button>
-
               <button
                 type="submit"
                 disabled={isPending}
@@ -191,7 +206,7 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
               >
                 {isPending ? (
                   <>
-                    <div style={spinnerStyle}></div>
+                    <div style={spinnerStyle} />
                     <span>Submitting...</span>
                   </>
                 ) : (
@@ -203,13 +218,10 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
+      
       {showConfirmation && (
         <div style={confirmOverlayStyle} onClick={handleCancelConfirmation}>
-          <div
-            style={confirmModalStyle}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div style={confirmModalStyle} onClick={(e) => e.stopPropagation()}>
             <div style={confirmIconContainerStyle}>
               <div style={confirmIconCircleStyle}>
                 <Check size={32} color="#4F46E5" strokeWidth={3} />
@@ -224,24 +236,20 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
             <div style={confirmDetailsStyle}>
               <div style={confirmDetailRowStyle}>
                 <span style={confirmLabelStyle}>From:</span>
-                <span style={confirmValueStyle}>
-                  {formatDate(formData.start_date)}
-                </span>
+                <span style={confirmValueStyle}>{formatDate(formData.start_date)}</span>
               </div>
               <div style={confirmDetailRowStyle}>
                 <span style={confirmLabelStyle}>To:</span>
-                <span style={confirmValueStyle}>
-                  {formatDate(formData.end_date)}
-                </span>
+                <span style={confirmValueStyle}>{formatDate(formData.end_date)}</span>
               </div>
               <div style={confirmDetailRowStyle}>
                 <span style={confirmLabelStyle}>Duration:</span>
                 <span style={confirmValueStyle}>
-                  {calculateDays()} day{calculateDays() > 1 ? "s" : ""}
+                  {days} day{days !== 1 ? "s" : ""}
                 </span>
               </div>
               {formData.reason && (
-                <div style={confirmDetailRowStyle}>
+                <div style={{ ...confirmDetailRowStyle, borderBottom: "none" }}>
                   <span style={confirmLabelStyle}>Reason:</span>
                   <span style={confirmValueStyle}>{formData.reason}</span>
                 </div>
@@ -265,7 +273,7 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
               >
                 {isPending ? (
                   <>
-                    <div style={spinnerStyle}></div>
+                    <div style={spinnerStyle} />
                     <span>Submitting...</span>
                   </>
                 ) : (
@@ -280,7 +288,7 @@ export default function TrainerLeaveModal({ isOpen, onClose }) {
   );
 }
 
-// Styles
+
 const overlayStyle = {
   position: "fixed",
   top: 0,
@@ -301,10 +309,11 @@ const modalStyle = {
   borderRadius: "16px",
   width: "90%",
   maxWidth: "540px",
-  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+  boxShadow:
+    "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
   animation: "slideUp 0.3s ease-out",
   maxHeight: "90vh",
-  overflow: "auto",
+  overflowY: "auto",
 };
 
 const headerStyle = {
@@ -338,12 +347,9 @@ const closeButtonStyle = {
   alignItems: "center",
   justifyContent: "center",
   color: "#6B7280",
-  transition: "all 0.2s",
 };
 
-const formStyle = {
-  padding: "24px",
-};
+const formStyle = { padding: "24px" };
 
 const formGridStyle = {
   display: "grid",
@@ -356,6 +362,7 @@ const fieldStyle = {
   display: "flex",
   flexDirection: "column",
   gap: "8px",
+  marginBottom: "16px",
 };
 
 const labelStyle = {
@@ -364,9 +371,7 @@ const labelStyle = {
   color: "#374151",
 };
 
-const requiredStyle = {
-  color: "#EF4444",
-};
+const requiredStyle = { color: "#EF4444" };
 
 const inputStyle = {
   padding: "10px 14px",
@@ -374,26 +379,16 @@ const inputStyle = {
   borderRadius: "8px",
   fontSize: "14px",
   color: "#111827",
-  transition: "all 0.2s",
   outline: "none",
   fontFamily: "inherit",
 };
 
 const textareaStyle = {
-  padding: "10px 14px",
-  border: "1px solid #D1D5DB",
-  borderRadius: "8px",
-  fontSize: "14px",
-  color: "#111827",
-  transition: "all 0.2s",
-  outline: "none",
+  ...inputStyle,
   resize: "vertical",
-  fontFamily: "inherit",
 };
 
-const durationInfoStyle = {
-  marginBottom: "16px",
-};
+const durationInfoStyle = { marginBottom: "16px" };
 
 const durationBadgeStyle = {
   display: "inline-flex",
@@ -411,7 +406,7 @@ const durationTextStyle = {
 
 const errorStyle = {
   display: "flex",
-  alignItems: "center",
+  alignItems: "flex-start",
   gap: "8px",
   padding: "12px 16px",
   backgroundColor: "#FEF2F2",
@@ -420,13 +415,14 @@ const errorStyle = {
   color: "#DC2626",
   fontSize: "14px",
   marginBottom: "16px",
+  lineHeight: "1.5",
 };
 
 const buttonContainerStyle = {
   display: "flex",
   justifyContent: "flex-end",
   gap: "12px",
-  marginTop: "24px",
+  marginTop: "8px",
 };
 
 const cancelButtonStyle = {
@@ -438,7 +434,6 @@ const cancelButtonStyle = {
   color: "#374151",
   backgroundColor: "#ffffff",
   cursor: "pointer",
-  transition: "all 0.2s",
 };
 
 const submitButtonStyle = {
@@ -450,7 +445,6 @@ const submitButtonStyle = {
   color: "#ffffff",
   backgroundColor: "#4F46E5",
   cursor: "pointer",
-  transition: "all 0.2s",
   display: "flex",
   alignItems: "center",
   gap: "8px",
@@ -465,7 +459,6 @@ const spinnerStyle = {
   animation: "spin 0.6s linear infinite",
 };
 
-// Confirmation Modal Styles
 const confirmOverlayStyle = {
   position: "fixed",
   top: 0,
@@ -487,7 +480,8 @@ const confirmModalStyle = {
   width: "90%",
   maxWidth: "480px",
   padding: "32px",
-  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+  boxShadow:
+    "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
   animation: "slideUp 0.3s ease-out",
 };
 
@@ -566,7 +560,6 @@ const confirmCancelButtonStyle = {
   color: "#374151",
   backgroundColor: "#ffffff",
   cursor: "pointer",
-  transition: "all 0.2s",
 };
 
 const confirmSubmitButtonStyle = {
@@ -579,55 +572,33 @@ const confirmSubmitButtonStyle = {
   color: "#ffffff",
   backgroundColor: "#4F46E5",
   cursor: "pointer",
-  transition: "all 0.2s",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   gap: "8px",
 };
 
-// Add these keyframe animations to your global CSS or styled-components
+
 const styleSheet = document.createElement("style");
 styleSheet.textContent = `
   @keyframes fadeIn {
     from { opacity: 0; }
-    to { opacity: 1; }
+    to   { opacity: 1; }
   }
-  
   @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  
   @keyframes spin {
     from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    to   { transform: rotate(360deg); }
   }
-
-  input[type="date"]:focus,
-  textarea:focus {
+  input[type="date"]:focus, textarea:focus {
     border-color: #4F46E5 !important;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important;
   }
-
-  button:hover:not(:disabled) {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  button:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  button:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(0); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
 `;
 document.head.appendChild(styleSheet);

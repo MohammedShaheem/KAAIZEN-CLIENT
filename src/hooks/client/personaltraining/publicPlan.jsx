@@ -6,6 +6,7 @@ import { selectSessionType,selectSessionSlot,selectTrainer,confirmAssignment,} f
 import { getClientCurrentPlan } from "@/services/personal_training/PersonalTraining";
 import { selectStartDate } from "@/services/personal_training/PersonalTraining";
 import { createCheckoutSession } from "@/services/personal_training/PersonalTraining";
+import { cancelSession } from "@/services/personal_training/PersonalTraining";
 
 export function usePublicPlans() {
   return useQuery({
@@ -107,6 +108,17 @@ export function useCreateCheckoutSession() {
         if (data?.checkout_url) {
         window.location.href = data.checkout_url;
       }
+    },
+  });
+}
+
+export function useCancelSession() {
+  const queryClient = useQueryClient();
+ 
+  return useMutation({
+    mutationFn: (sessionId) => cancelSession(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["clientCurrentPlan"] });
     },
   });
 }

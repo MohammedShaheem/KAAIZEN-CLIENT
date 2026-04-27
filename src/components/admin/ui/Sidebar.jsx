@@ -50,7 +50,7 @@ export default function Sidebar({ userName = "Edwin" }) {
   return (
     <aside className="w-64 min-h-screen bg-[#EDE7F6] p-6 flex flex-col">
       {/* Profile Section */}
-      <div className="flex flex-col items-center mb-8">
+      {/* <div className="flex flex-col items-center mb-8">
         <div className="w-24 h-24 rounded-full bg-gray-300 mb-4" />
         <h2 className="text-xl font-semibold text-[#7B1FA2] mb-4">
           {userName}
@@ -58,7 +58,7 @@ export default function Sidebar({ userName = "Edwin" }) {
         <button className="w-full bg-[#7B1FA2] text-white py-2 px-6 rounded-lg hover:bg-[#6A1B9A] transition-colors">
           Profile
         </button>
-      </div>
+      </div> */}
 
       {/* Navigation */}
       <nav className="flex-1">
