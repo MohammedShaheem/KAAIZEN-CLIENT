@@ -3,6 +3,11 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { getSessionVideoToken, startSession, endSession } from "@/services/personal_training/PersonalTraining";
 import { useNavigate } from "react-router-dom";
 
+
+
+const ZEGO_APP_ID = 64844295;
+const ZEGO_SERVER_SECRET = "abfc8d6e66fedd5fc5a7070c4a1a20a2";
+
 const SessionVideoCall = ({ sessionId }) => {
   const containerRef = useRef(null);
   const zpRef = useRef(null);
@@ -48,13 +53,12 @@ const SessionVideoCall = ({ sessionId }) => {
     const data = await getSessionVideoToken(sessionId);
     const { room_id, user_id, user_name } = data; // only need these from backend now
 
-    // ✅ Generate kitToken entirely on frontend
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
-      Number(import.meta.env.VITE_ZEGO_APP_ID),     // must be a number
-      import.meta.env.VITE_ZEGO_SERVER_SECRET,       // server secret from .env
-      String(room_id),                               // room id from backend
-      String(user_id),                               // user id
-      String(user_name)                              // user name
+      ZEGO_APP_ID,          
+      ZEGO_SERVER_SECRET,  
+      String(room_id),
+      String(user_id),
+      String(user_name)
     );
 
     const zp = ZegoUIKitPrebuilt.create(kitToken);
