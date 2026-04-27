@@ -47,18 +47,8 @@ const SessionVideoCall = ({ sessionId }) => {
 
       const data = await getSessionVideoToken(sessionId);
       const { room_id, app_id, token, user_id, user_name } = data;
-      
-      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
-        Number(app_id),
-        token,      
-        room_id,
-        user_id,
-        user_name || "User"
-      );
 
-      if (!initializingRef.current) return;
-
-      const zp = ZegoUIKitPrebuilt.create(kitToken);
+      const zp = ZegoUIKitPrebuilt.create(token);
 
       if (!zp) {
         console.error("Token invalid — check AppSign and AppID");
