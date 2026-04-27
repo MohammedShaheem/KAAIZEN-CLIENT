@@ -49,9 +49,9 @@ const SessionVideoCall = ({ sessionId }) => {
       const { room_id, app_id, user_id, user_name } = data;
 
       
-      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        Number(import.meta.env.VITE_ZEGO_APP_ID),  
-        import.meta.env.VITE_ZEGO_SERVER_SECRET,       
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
+        Number(app_id),
+        token,      
         room_id,
         user_id,
         user_name || "User"
