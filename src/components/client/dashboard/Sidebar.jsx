@@ -7,6 +7,10 @@ import {
   Dumbbell,
   LogOut,
   Wallet,
+  BrainCircuit,
+  Bot,
+  Contact,
+  
 } from "lucide-react";
 import { useState } from "react";
 import useLogout from "@/hooks/common/useLogout";
@@ -27,11 +31,11 @@ const Sidebar = () => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/Dashboard" },
     { icon: Dumbbell, label: "Training", path: "/workout_categories" },
-    { icon: Clock, label: "History" },
-    { icon: CheckCircle, label: "Progress", path: "/profile" },
+    // { icon: Clock, label: "History" },
+    { icon: Contact, label: "Profile", path: "/profile" },
     { icon: Briefcase, label: "Plans", key: "plans" }, 
-    { icon: MessageCircle, label: "Messages",path:"/ai-plan" },
-    { icon: Wallet, label: "Messages",path:"/wallet" },
+    { icon: Bot, label: "AI plan",path:"/ai-plan" },
+    { icon: Wallet, label: "Wallet",path:"/wallet" },
   ];
 
   const handleLogout = () => {

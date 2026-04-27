@@ -46,3 +46,9 @@ export const completeWorkoutSession = async (payload) => {
   );
   return data;
 };
+
+export const getRecentWorkoutSessions = async () => {
+  const { data } = await api.get("/api/client/workouts/sessions/recent/");
+  
+  return Array.isArray(data) ? data : (data.data ?? []);
+};

@@ -4,6 +4,7 @@ export const getClientProfile = async () => {
   try {
     const response = await api.get("/api/client/me/profile");
     return response.data;
+    console.log(response.data)
   } catch(error) {  
     if (error.response?.status === 404) {
       return null;

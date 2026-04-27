@@ -247,6 +247,21 @@ export const endSession = async (sessionId) => {
   }
 };
 
+export const cancelSession = async (sessionId) => {
+  try {
+    const { data } = await api.post(
+      "/api/personaltraining/sessions/cancel/",
+      { session_id: sessionId }
+    );
+    return data;
+
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.detail || "Failed to cancel session"
+    );
+  }
+};
+
 
 
 

@@ -17,6 +17,7 @@ export function useTrainerLeaves() {
   });
 }
 
+// useTrainerLeave.jsx
 export function useCreateTrainerLeave() {
   const queryClient = useQueryClient();
 
@@ -28,5 +29,6 @@ export function useCreateTrainerLeave() {
         queryKey: ["trainer", "leaves"],
       });
     },
+    
   });
 }

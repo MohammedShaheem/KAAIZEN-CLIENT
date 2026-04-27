@@ -39,6 +39,10 @@ export const getTrainerLeaves = async () => {
 };
 
 export const createTrainerLeave = async (payload) => {
-  const { data } = await api.post("/api/trainers/leave/", payload);
-  return data;
+  try {
+    const { data } = await api.post("/api/trainers/leave/", payload);
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
