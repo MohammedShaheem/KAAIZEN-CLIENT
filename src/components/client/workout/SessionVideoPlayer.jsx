@@ -87,7 +87,7 @@ const SessionVideoPlayer = ({ categoryId, playlist, startIndex = 0 }) => {
 
     completeWorkoutSession({ session_id: sid })
       .then((data) => {
-        navigate("/client/session-complete", {
+        navigate("/workout_categories", {
           state: { calories: data.calories, sessionId: data.session_id },
         });
       })

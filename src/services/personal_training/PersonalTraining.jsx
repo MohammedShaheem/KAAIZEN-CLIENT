@@ -263,7 +263,19 @@ export const cancelSession = async (sessionId) => {
 };
 
 
-
+export const submitSessionRating = async (sessionId, rating) => {
+  try {
+    const { data } = await api.post(
+      "/api/personaltraining/sessions/rate/",
+      { session_id: sessionId, rating }
+    );
+    return data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.detail || "Failed to submit rating"
+    );
+  }
+};
 
 
 
