@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useWorkoutCategories } from "@/hooks/client/workout/useWorkout";
 import { useNavigate } from "react-router-dom";
+import { useClientProfile } from "@/hooks/client/dashboard/useClientProfile";
 import ClientLayout from "@/components/client/layout/ClientLayout";
 
 export default function WorkoutCategories() {
@@ -20,6 +21,15 @@ export default function WorkoutCategories() {
     return <div className="p-4">Loading categories...</div>;
   }
 
+
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileError,
+    error: profileErrorData,
+    refetch: refetchProfile,
+  } = useClientProfile();
+
   if (isError) {
     return (
       <div className="p-4 text-red-500">
@@ -31,7 +41,7 @@ export default function WorkoutCategories() {
   
 
   return (
-    <ClientLayout>
+    <ClientLayout headerProps={{ userName: userData.name, location: "Workout Category" }}>
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Workout Categories</h1>
 
