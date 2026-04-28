@@ -248,7 +248,7 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREA
             <div className="flex items-center gap-4">
 
               {/* Streak Badge */}
-              <div className="streak-badge">
+              {/* <div className="streak-badge">
                 <Flame size={18} className="streak-flame" style={{ color: "#fff" }} />
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", lineHeight: 1 }}>
@@ -258,14 +258,14 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREA
                     Day Streak
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              {/* Log Workout CTA */}
+              {/* Log Workout CTA
               <button className="log-workout-btn">
                 <Zap size={15} style={{ flexShrink: 0 }} />
                 Log Workout
                 <ChevronRight size={14} className="chevron" />
-              </button>
+              </button> */}
 
               <div className="w-px h-8 header-divider" />
 
