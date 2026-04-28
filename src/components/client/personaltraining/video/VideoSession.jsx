@@ -52,6 +52,14 @@ const SessionVideoCall = ({ sessionId }) => {
 
       const data = await getSessionVideoToken(sessionId);
       const { room_id, app_id, token, user_id, user_name } = data;
+      console.log("Token debug:", {
+        app_id,
+        app_id_type: typeof app_id,
+        room_id,
+        user_id,
+        token_prefix: token?.substring(0, 15),
+        token_length: token?.length,
+      });
 
       const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
         Number(app_id),
