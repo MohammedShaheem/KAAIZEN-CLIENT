@@ -9,7 +9,7 @@ export default function WorkoutDetail() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  //from router state (fast path)
+  
   const playlistFromNav = location.state?.playlist || [];
   const startIndexFromNav = location.state?.startIndex || 0;
   const categoryId = location.state?.categoryId;
@@ -18,7 +18,7 @@ export default function WorkoutDetail() {
   console.log("category id:",categoryId);
   
 
-  // fallback: user refreshed or opened direct link
+  
   const { data, isLoading } = useQuery({
     queryKey: ["fallbackPlaylist", categoryId],
     queryFn: () => getcategoryDetail(categoryId, 1),

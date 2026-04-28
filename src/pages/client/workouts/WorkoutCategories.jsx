@@ -15,13 +15,6 @@ export default function WorkoutCategories() {
     error,
     isFetching,
   } = useWorkoutCategories(page);
-  console.log("from categorys",data);
-
-  if (isLoading) {
-    return <div className="p-4">Loading categories...</div>;
-  }
-
-
   const {
     data: profile,
     isLoading: profileLoading,
@@ -29,6 +22,14 @@ export default function WorkoutCategories() {
     error: profileErrorData,
     refetch: refetchProfile,
   } = useClientProfile();
+  console.log("from categorys",data);
+
+  if (isLoading) {
+    return <div className="p-4">Loading categories...</div>;
+  }
+
+
+  
 
   if (isError) {
     return (
@@ -41,7 +42,7 @@ export default function WorkoutCategories() {
   
 
   return (
-    <ClientLayout headerProps={{ userName: userData.name, location: "Workout Category" }}>
+    <ClientLayout headerProps={{ userName: data.name, location: "Workout Category" }}>
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Workout Categories</h1>
 

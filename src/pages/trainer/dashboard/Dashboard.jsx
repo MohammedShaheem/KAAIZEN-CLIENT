@@ -108,7 +108,7 @@ export default function Dashboard() {
 
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-              <div className="bg-white p-6 rounded-xl border">
+              {/* <div className="bg-white p-6 rounded-xl border">
                 <h3 className="font-bold mb-4">Income Overview</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={incomeData}>
@@ -123,7 +123,7 @@ export default function Dashboard() {
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </div>
+              </div> */}
 
               <div className="bg-white p-6 rounded-xl border">
                 <h3 className="font-bold mb-4">Client Count</h3>

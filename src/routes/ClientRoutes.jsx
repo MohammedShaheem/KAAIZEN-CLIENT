@@ -39,8 +39,8 @@ export default function ClientRoutes() {
       </Route>
 
       <Route element={<ClientProtectedRoute />}>
-        <Route path="/onboarding" element={<OnboardingMain />} />
         <Route path="/dashboard" element={< Dashboard />} />
+        <Route path="/onboarding" element={<OnboardingMain />} />
         <Route path="/meals" element={<MealEntryPage />} />
         <Route path="/meals/log" element={<MealLoggingPage />} />
         <Route path="/sleep/log" element={<SleepDashboard />} />
