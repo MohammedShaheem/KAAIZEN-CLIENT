@@ -1,11 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import.meta.env.VITE_API_URLS
+import.meta.env.VITE_API_URL
 
 
     
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URLS || 'http://localhost:8000',
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
