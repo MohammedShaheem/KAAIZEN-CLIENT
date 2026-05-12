@@ -1,7 +1,8 @@
 import { Calendar, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { usePublicPlans } from "@/hooks/client/personaltraining/publicPlan";
+import { usePublicPlans, useClientPlans } from "@/hooks/client/personaltraining/publicPlan";
 import ClientLayout from "@/components/client/layout/ClientLayout";
+import { useEffect } from "react";
 
 const PublicTrainingPlans = () => {
   const navigate = useNavigate();
@@ -13,6 +14,19 @@ const PublicTrainingPlans = () => {
     error,
   } = usePublicPlans();
 
+  const { data: clientPlans = [] } = useClientPlans();
+  console.log('plan:',clientPlans)
+  useEffect(() => {
+    const paidPlan = clientPlans.find((p) => p.status === "paid");
+
+    if (!paidPlan) return; 
+
+    if (paidPlan.is_active === false) {
+      navigate("/booking", { replace: true });
+    } else if (paidPlan.is_active === true) {
+      navigate("/current-plan", { replace: true });
+    }
+  }, [clientPlans, navigate]);
   
   if (isLoading) {
     return (

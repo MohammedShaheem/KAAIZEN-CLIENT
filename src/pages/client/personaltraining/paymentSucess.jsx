@@ -8,7 +8,7 @@ const PaymentSuccess = () => {
   useEffect(() => {
     // Wait 2 seconds then go to booking
     const timer = setTimeout(() => {
-      navigate("/booking");
+      navigate("/booking", { replace: true });
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -18,7 +18,7 @@ const PaymentSuccess = () => {
     <ClientLayout>
       <div className="flex flex-col items-center justify-center h-[60vh]">
         <h1 className="text-2xl font-bold text-green-600">
-          Payment Successful 🎉
+          Payment Successful 
         </h1>
         <p className="mt-3 text-gray-600">
           Redirecting you to booking setup...

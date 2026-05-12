@@ -1,8 +1,7 @@
-'use client';
-
 import { Flame, Zap, ChevronRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import "../../../assets/css/client_css/header.css"
+import { Link } from "react-router-dom"  // add this import
 
 const getTimeGreeting = () => {
   const hour = new Date().getHours()
@@ -15,7 +14,7 @@ const getTimeGreeting = () => {
   return { label: "Good Night", emoji: "🌙", sub: "Rest is part of the grind. Recovery mode." }
 }
 
-const STREAK = 12 // Replace with real prop/state
+const STREAK = 12 
 
 const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREAK }) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -25,7 +24,7 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREA
 
   useEffect(() => {
     setIsVisible(true)
-    // Refresh greeting every minute
+    
     const interval = setInterval(() => {
       setGreeting(getTimeGreeting())
       setTick(t => t + 1)
@@ -226,7 +225,7 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREA
         <div className="relative flowing-border-header" style={{ background: "#ffffff" }}>
           <div className="flex justify-between items-center px-8 py-3 gap-6">
 
-            {/* ── LEFT: Greeting + Name ── */}
+           
             <div className="flex-1 flex flex-col justify-center gap-0.5">
               <div className="greeting-label">
                 <span className="greeting-emoji">{greeting.emoji}</span>
@@ -270,13 +269,15 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREA
               <div className="w-px h-8 header-divider" />
 
               {/* Profile */}
-              <div className="profile-group flex items-center gap-3 cursor-pointer transition-all duration-300">
+              <Link
+                to="/profile"
+                className="profile-group flex items-center gap-3 cursor-pointer transition-all duration-300 no-underline"
+              >
                 <div className="avatar-ring">{initials}</div>
                 <div className="hidden md:block">
                   <p className="profile-name font-semibold text-sm">{userName}</p>
-                  {/* <p className="profile-subtext text-xs">Premium Member</p> */}
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
 
