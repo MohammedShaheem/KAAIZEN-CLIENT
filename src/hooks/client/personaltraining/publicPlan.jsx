@@ -103,10 +103,9 @@ export function useClientCurrentPlan() {
 export function useCreateCheckoutSession() {
   return useMutation({
     mutationFn: createCheckoutSession,
-
     onSuccess: (data) => {
-        if (data?.checkout_url) {
-        window.location.href = data.checkout_url;
+      if (data?.checkout_url) {
+        window.location.replace(data.checkout_url); 
       }
     },
   });

@@ -10,7 +10,7 @@ const PAGE_SIZE = 5;
 const MAX_CANCELLATIONS = 2;
 const REFUND_CUTOFF_HOURS = 24;
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+
 
 const hoursUntil = (sessionDate, startTime) => {
   const sessionDt = new Date(`${sessionDate}T${startTime}`);
@@ -42,7 +42,6 @@ const statusStyle = (status) => {
   return "bg-gray-100 text-gray-600";
 };
 
-// ─── Cancel Confirmation Modal ───────────────────────────────────────────────
 
 const CancelModal = ({ session, cancellationsUsed, onConfirm, onClose, isPending }) => {
   const eligible = isRefundEligible(session, cancellationsUsed);
@@ -66,7 +65,6 @@ const CancelModal = ({ session, cancellationsUsed, onConfirm, onClose, isPending
           {session.session_date} · {session.start_time} – {session.end_time}
         </p>
 
-        {/* Refund status banner */}
         <div
           className={`rounded-xl p-3 mb-4 text-sm ${
             eligible
@@ -80,7 +78,6 @@ const CancelModal = ({ session, cancellationsUsed, onConfirm, onClose, isPending
           <p className={eligible ? "text-green-600" : "text-red-600"}>{reasonText}</p>
         </div>
 
-        {/* Breakdown */}
         <div className="divide-y divide-gray-100 mb-5 text-sm">
           <div className="flex justify-between py-2">
             <span className="text-gray-500">Session price</span>
@@ -123,7 +120,6 @@ const CancelModal = ({ session, cancellationsUsed, onConfirm, onClose, isPending
   );
 };
 
-// ─── Result Modal ────────────────────────────────────────────────────────────
 
 const ResultModal = ({ result, onClose }) => {
   const { refund_eligible, cancellations_used, remaining_cancellations, session_price } = result;
@@ -164,7 +160,6 @@ const ResultModal = ({ result, onClose }) => {
   );
 };
 
-// ─── Page ────────────────────────────────────────────────────────────────────
 
 const ClientCurrentPlanPage = () => {
   const { data, isLoading, isError, error } = useClientCurrentPlan();
@@ -194,7 +189,6 @@ const ClientCurrentPlanPage = () => {
     });
   };
 
-  // ── Loading / error states ──
 
   if (isLoading) {
     return (
@@ -224,7 +218,6 @@ const ClientCurrentPlanPage = () => {
     );
   }
 
-  // ── Derived data ──
 
   const { plan, trainer, assignment, sessions = [] } = data;
 

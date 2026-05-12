@@ -42,7 +42,7 @@ export default function WorkoutCategories() {
   
 
   return (
-    <ClientLayout headerProps={{ userName: data.name, location: "Workout Category" }}>
+    <ClientLayout headerProps={{location: "Workout Category" }}>
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Workout Categories</h1>
 

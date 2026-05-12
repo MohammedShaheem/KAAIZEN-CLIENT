@@ -1,5 +1,6 @@
 import Sidebar from "../dashboard/Sidebar";
 import Header from "../dashboard/Header";
+import { useClientProfile } from "@/hooks/client/dashboard/useClientProfile";
 
 const THEMES = {
   purple: {
@@ -69,6 +70,9 @@ const ClientLayout = ({
 }) => {
   const t = THEMES[theme] || THEMES.purple;
 
+  const { data: profile } = useClientProfile();
+  const userName = profile?.full_name ?? "User";
+
   return (
     <div
       className="flex min-h-screen bg-gradient-to-b from-gray-50 to-gray-100"
@@ -99,7 +103,7 @@ const ClientLayout = ({
       <Sidebar />
 
       <div className="ml-24 flex-1 overflow-auto">
-        <Header {...headerProps} />
+        <Header {...headerProps} userName={userName} />
 
         <div className="p-8">
           <div className="max-w-7xl mx-auto">{children}</div>

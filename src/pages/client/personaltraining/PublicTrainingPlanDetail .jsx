@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Calendar,
   DollarSign,
@@ -6,14 +6,14 @@ import {
   Clock,
   Repeat,
 } from "lucide-react";
-import {
-  usePublicPlanDetail,
-} from "@/hooks/client/personaltraining/publicPlan";
-import { useCreateCheckoutSession } from "@/hooks/client/personaltraining/publicPlan";
+import {usePublicPlanDetail, useCreateCheckoutSession, useClientPlans } from "@/hooks/client/personaltraining/publicPlan";
 import ClientLayout from "@/components/client/layout/ClientLayout";
+import { useEffect } from "react";
 
 const PublicTrainingPlanDetail = () => {
   const { planId } = useParams();
+  const navigate = useNavigate();
+
 
   const {
     data: plan,
@@ -21,8 +21,17 @@ const PublicTrainingPlanDetail = () => {
     isError,
     error,
   } = usePublicPlanDetail(planId);
-
+  const { data: clientPlans = [] } = useClientPlans();
   const checkoutMutation = useCreateCheckoutSession();
+
+  useEffect(() => {
+    const hasPaidPlan = clientPlans.some(
+      (p) => p.status === "paid"
+    );
+    if (hasPaidPlan) {
+      navigate("/booking", { replace: true });
+    }
+  }, [clientPlans, navigate]);
 
   if (isLoading) {
     return (
