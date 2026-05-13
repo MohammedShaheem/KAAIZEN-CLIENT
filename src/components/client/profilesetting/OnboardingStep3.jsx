@@ -71,7 +71,9 @@ export default function OnboardingStep3({ formData, errors, updateFormData, onSu
   }
 
   return (
-    <ClientLayout currentStep={3}>
+    <ClientLayout currentStep={3}
+        formData={formData}        
+        updateFormData={updateFormData}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="text-center mb-8">
           <p className="text-gray-600">How fast do you want to reach your goal?</p>

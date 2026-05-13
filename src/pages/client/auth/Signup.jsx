@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { clientsignupRequest, verifyOtpRequest,resendSignupOtp } from '@/services/auth/auth'; 
+import { clientsignupRequest, verifyOtpRequest, resendSignupOtp } from '@/services/auth/auth';
 import { emailRule, passwordRule, otpRule } from '@/validators/common.schema';
 import { setUSer } from '@/features/auth/authSlice';
 import AuthLayout from '@/components/auth/layouts/AuthLayout';
@@ -13,6 +13,93 @@ import SubmitButton from '@/components/ui/SubmitButton';
 import AuthLink from '@/components/auth/ui/AuthLink';
 import SignupImage from '@/assets/client-images/clinet-signup-page.jpg';
 import toast, { Toaster } from 'react-hot-toast';
+
+// ─── Password strength logic ──────────────────────────────────────────────────
+
+const getPasswordStrength = (password) => {
+  if (!password) return { score: 0, label: '', color: '' };
+
+  const checks = {
+    length:    password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number:    /[0-9]/.test(password),
+    special:   /[^A-Za-z0-9]/.test(password),
+  };
+
+  const passed = Object.values(checks).filter(Boolean).length;
+
+  if (passed <= 1) return { score: 1, label: 'Very Weak',  color: 'bg-red-500',    text: 'text-red-500'    };
+  if (passed === 2) return { score: 2, label: 'Weak',       color: 'bg-orange-400', text: 'text-orange-400' };
+  if (passed === 3) return { score: 3, label: 'Fair',       color: 'bg-yellow-400', text: 'text-yellow-500' };
+  if (passed === 4) return { score: 4, label: 'Strong',     color: 'bg-blue-500',   text: 'text-blue-500'   };
+  return               { score: 5, label: 'Very Strong', color: 'bg-green-500',  text: 'text-green-500'  };
+};
+
+const PASSWORD_RULES = [
+  { key: 'length',    label: 'At least 8 characters',         test: (p) => p.length >= 8           },
+  { key: 'uppercase', label: 'One uppercase letter (A–Z)',     test: (p) => /[A-Z]/.test(p)         },
+  { key: 'lowercase', label: 'One lowercase letter (a–z)',     test: (p) => /[a-z]/.test(p)         },
+  { key: 'number',    label: 'One number (0–9)',               test: (p) => /[0-9]/.test(p)         },
+  { key: 'special',   label: 'One special character (!@#…)',   test: (p) => /[^A-Za-z0-9]/.test(p) },
+];
+
+// ─── Strength indicator component ─────────────────────────────────────────────
+
+function PasswordStrengthIndicator({ password }) {
+  if (!password) return null;
+
+  const { score, label, color, text } = getPasswordStrength(password);
+  const totalBars = 5;
+
+  return (
+    <div className="mt-2 space-y-2">
+      {/* Strength bars */}
+      <div className="flex gap-1">
+        {Array.from({ length: totalBars }, (_, i) => (
+          <div
+            key={i}
+            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+              i < score ? color : 'bg-gray-200'
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Label */}
+      <p className={`text-xs font-semibold ${text}`}>{label}</p>
+
+      {/* Checklist */}
+      <ul className="space-y-1">
+        {PASSWORD_RULES.map(({ key, label: ruleLabel, test }) => {
+          const passed = test(password);
+          return (
+            <li key={key} className="flex items-center gap-2 text-xs">
+              <span
+                className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center transition-colors duration-200 ${
+                  passed ? 'bg-green-500' : 'bg-gray-200'
+                }`}
+              >
+                {passed ? (
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                )}
+              </span>
+              <span className={passed ? 'text-gray-500 line-through' : 'text-gray-500'}>
+                {ruleLabel}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+// ─── Main Signup component ─────────────────────────────────────────────────────
 
 export default function Signup() {
   const dispatch = useDispatch();
@@ -51,6 +138,13 @@ export default function Signup() {
   });
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    // Block submission if password isn't at least "Fair" (score >= 3)
+    const { score } = getPasswordStrength(values.password);
+    if (score < 3) {
+      setErrors({ password: 'Please choose a stronger password' });
+      return;
+    }
+
     if (values.password !== values.confirmPassword) {
       setErrors({ confirmPassword: 'Passwords must match' });
       return;
@@ -65,8 +159,8 @@ export default function Signup() {
       toast.success('OTP sent to your email!');
     } catch (err) {
       const message = err.response?.data?.detail || 'Signup failed. Try again';
-      setErrors({ email: message });        
-      toast.error(message);                 
+      setErrors({ email: message });
+      toast.error(message);
     } finally {
       setIsSigningUp(false);
       setSubmitting(false);
@@ -75,13 +169,12 @@ export default function Signup() {
 
   const handleOtpChange = (index, value) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newOtpValues = [...Array(6).fill('')]; 
-      
+      const newOtpValues = [...Array(6).fill('')];
       inputRefs.current.forEach((ref, i) => {
         if (i !== index && ref?.value) newOtpValues[i] = ref.value;
       });
       newOtpValues[index] = value;
-      inputRefs.current[index].value = value; 
+      inputRefs.current[index].value = value;
       setOtpError('');
       if (value && index < 5) {
         inputRefs.current[index + 1]?.focus();
@@ -96,41 +189,25 @@ export default function Signup() {
   };
 
   const handleResendOtp = async () => {
-  try {
-    console.log("Resend OTP for", userEmail);
-
-    await resendSignupOtp({
-      email: userEmail,
-    });
-    setTimer(56);
-    setOtpError("");
-    inputRefs.current.forEach(ref => {
-      if (ref) ref.value = "";
-    });
-    inputRefs.current[0]?.focus();
-
-  } catch (err) {
-    console.error(err);
-
-    setOtpError(
-      err.response?.data?.detail || "Resend failed. Please try again."
-    );
-  }
-};
-
+    try {
+      await resendSignupOtp({ email: userEmail });
+      setTimer(56);
+      setOtpError('');
+      inputRefs.current.forEach((ref) => { if (ref) ref.value = ''; });
+      inputRefs.current[0]?.focus();
+    } catch (err) {
+      setOtpError(err.response?.data?.detail || 'Resend failed. Please try again.');
+    }
+  };
 
   const handleVerifyOtp = async () => {
-    const otpInputs = inputRefs.current;
-    const otp = otpInputs.map(input => input?.value || '').join('');
-    if (otp.length !== 6) {
-      setOtpError('Please enter all 6 digits');
-      return;
-    }
+    const otp = inputRefs.current.map((input) => input?.value || '').join('');
+    if (otp.length !== 6) { setOtpError('Please enter all 6 digits'); return; }
     setIsVerifying(true);
     try {
       const response = await verifyOtpRequest({ email: userEmail, otp });
       dispatch(setUSer(response.data.user));
-      setShowOtpModal(false); 
+      setShowOtpModal(false);
       navigate('/onboarding', { replace: true });
     } catch (err) {
       setOtpError(err.response?.data?.detail || 'Invalid or expired OTP');
@@ -139,19 +216,16 @@ export default function Signup() {
     }
   };
 
-  const handleLogin = () => {
-    navigate('/login');
-  };
-
   return (
     <AuthLayout imageSrc={SignupImage} role="client">
       <Toaster position="top-center" />
+
       {isSigningUp && (
         <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-40">
           <div className="flex flex-col items-center gap-4">
             <div className="relative w-16 h-16">
-              <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-blue-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 border-4 border-gray-200 rounded-full" />
+              <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-blue-500 rounded-full animate-spin" />
             </div>
             <p className="text-white font-semibold">Creating your account...</p>
           </div>
@@ -159,25 +233,29 @@ export default function Signup() {
       )}
 
       <div className={`transition-all duration-300 ${showOtpModal ? 'opacity-50 pointer-events-none' : ''}`}>
+        {/* ↓ Destructure `values` alongside `isSubmitting` */}
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-          {({ isSubmitting }) => (
+          {({ isSubmitting, values }) => (
             <Form className="space-y-5">
               <h2 className="text-4xl font-bold text-center mb-2 tracking-wide">SIGN UP</h2>
-              
-              
+
               <EmailField name="email" />
-              
+
               <PasswordField name="password" />
+
+              {/* ↓ Strength indicator appears right after the password field */}
+              <PasswordStrengthIndicator password={values.password} />
+
               <PasswordField name="confirmPassword" placeholder="Confirm Password" />
-              
+
               <Field name="role" type="hidden" value="client" />
-              
+
               <SubmitButton type="submit" disabled={isSubmitting || isSigningUp}>
                 {isSigningUp ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <circle className="opacity-25" cx="12" cy="12" r="10" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                     Signing up...
                   </span>
@@ -185,46 +263,33 @@ export default function Signup() {
                   'Sign Up Now'
                 )}
               </SubmitButton>
-              
+
               <p className="text-center mt-8 text-gray-600">
-                Already have an account? <AuthLink onClick={handleLogin}>Login</AuthLink>
+                Already have an account?{' '}
+                <AuthLink onClick={() => navigate('/login')}>Login</AuthLink>
               </p>
             </Form>
           )}
         </Formik>
       </div>
 
-      {/* otp modal */}
+      {/* OTP Modal — unchanged */}
       {showOtpModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="w-full max-w-md p-8 bg-white rounded-3xl shadow-2xl mx-4 relative">
-            
-            <button
-              onClick={() => setShowOtpModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setShowOtpModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            
-            {/* lock icon */}
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
                 <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
             </div>
-            
             <h2 className="text-2xl font-bold text-center mb-8 tracking-wide">VERIFY YOUR ACCOUNT</h2>
-            
-            {/* otp inputs */}
             <div className="flex justify-center gap-3 mb-4">
               {Array.from({ length: 6 }, (_, index) => (
                 <input
@@ -239,27 +304,14 @@ export default function Signup() {
                 />
               ))}
             </div>
-            
             {otpError && <div className="text-red-500 text-sm text-center mb-4">{otpError}</div>}
-            
-            <div className="text-center text-gray-500 text-sm mb-6">
-              00:{timer.toString().padStart(2, '0')}
-            </div>
-            
-            <SubmitButton
-              type="button"
-              onClick={handleVerifyOtp}
-              disabled={isVerifying}
-              className="mb-4"
-              style={{
-                background: 'linear-gradient(135deg, #93c5fd 0%, #a5b4fc 100%)',
-              }}
-            >
+            <div className="text-center text-gray-500 text-sm mb-6">00:{timer.toString().padStart(2, '0')}</div>
+            <SubmitButton type="button" onClick={handleVerifyOtp} disabled={isVerifying} className="mb-4">
               {isVerifying ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <circle className="opacity-25" cx="12" cy="12" r="10" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
                   Verifying...
                 </span>
@@ -267,15 +319,9 @@ export default function Signup() {
                 'Verify OTP'
               )}
             </SubmitButton>
-            
             <div className="text-center text-sm text-gray-600">
               OTP expired?{' '}
-              <button
-                type="button"
-                onClick={handleResendOtp}
-                disabled={timer > 0}
-                className="font-bold text-gray-800 hover:underline disabled:text-gray-400"
-              >
+              <button type="button" onClick={handleResendOtp} disabled={timer > 0} className="font-bold text-gray-800 hover:underline disabled:text-gray-400">
                 {timer > 0 ? `Resend in ${timer}s` : 'RESEND OTP'}
               </button>
             </div>

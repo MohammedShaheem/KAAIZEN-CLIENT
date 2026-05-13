@@ -72,6 +72,7 @@ const ClientLayout = ({
 
   const { data: profile } = useClientProfile();
   const userName = profile?.full_name ?? "User";
+  const userImage = profile?.profile_picture ?? null;
 
   return (
     <div
@@ -103,7 +104,8 @@ const ClientLayout = ({
       <Sidebar />
 
       <div className="ml-24 flex-1 overflow-auto">
-        <Header {...headerProps} userName={userName} />
+        <Header {...headerProps} userName={userName} userImage={userImage} />  // ← pass it
+
 
         <div className="p-8">
           <div className="max-w-7xl mx-auto">{children}</div>

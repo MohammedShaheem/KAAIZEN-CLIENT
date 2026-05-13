@@ -273,7 +273,17 @@ const Header = ({ userName = "Thomas Fletcher", userImage = null, streak = STREA
                 to="/profile"
                 className="profile-group flex items-center gap-3 cursor-pointer transition-all duration-300 no-underline"
               >
-                <div className="avatar-ring">{initials}</div>
+                <div className="avatar-ring overflow-hidden">
+                  {userImage ? (
+                    <img
+                      src={userImage}
+                      alt={userName}
+                      className="w-full h-full object-cover rounded-[10px]"
+                    />
+                  ) : (
+                    initials
+                  )}
+                </div>
                 <div className="hidden md:block">
                   <p className="profile-name font-semibold text-sm">{userName}</p>
                 </div>

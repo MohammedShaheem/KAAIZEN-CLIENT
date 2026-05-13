@@ -93,7 +93,9 @@ export default function OnboardingStep4({ formData, errors, updateFormData, onSu
   }
 
   return (
-    <ClientLayout currentStep={4}>
+    <ClientLayout currentStep={4}
+        formData={formData}        
+        updateFormData={updateFormData}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <ClientSelect
           icon={Utensils}
