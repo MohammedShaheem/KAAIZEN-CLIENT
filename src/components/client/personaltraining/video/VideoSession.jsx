@@ -56,13 +56,12 @@ const SessionVideoCall = ({ sessionId }) => {
 
     
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      ZEGO_APP_ID,        
-      ZEGO_SERVER_SECRET,  
+      Number(app_id),
+      ZEGO_SERVER_SECRET,
       room_id,
       user_id,
       user_name || "User"
     );
-
     const zp = ZegoUIKitPrebuilt.create(kitToken);
 
     if (!zp) {
