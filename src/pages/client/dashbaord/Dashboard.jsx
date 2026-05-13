@@ -62,8 +62,8 @@ const deriveGoals = (profile) => {
   const key    = profile.fitness_goal;
   const config = GOAL_CONFIG[key] ?? { icon: Zap, title: key ?? "Fitness", color: "#06b6d4" };
   const goalDisplayMap = {
-    weight_loss: { goal: `${profile.weight_kg ?? 0} kg current`, percentage: 60 },
-    muscle_gain: { goal: "70 kg / 80 kg",                        percentage: 79 },
+    weight_loss: { goal: `${profile.weight_kg ?? 0} kg current`, percentage:0 },
+    muscle_gain: { goal: "0",                        percentage:0 },
   };
   const display = goalDisplayMap[key] ?? { goal: "In Progress", percentage: 0 };
   return [{ ...config, ...display }];

@@ -106,7 +106,9 @@ export default function OnboardingStep2({ formData, errors, updateFormData, onSu
   }
 
   return (
-    <ClientLayout currentStep={2}>
+    <ClientLayout currentStep={2}
+        formData={formData}        
+        updateFormData={updateFormData}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <ClientInput
           icon={Ruler}

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSelector } from "react-redux"
 import OnboardingStep1 from "@/components/client/profilesetting/OnboardingStep1"
 import OnboardingStep2 from "@/components/client/profilesetting/OnboardingStep2"
 import OnboardingStep3 from "@/components/client/profilesetting/OnboardingStep3"
@@ -7,9 +8,10 @@ import { createClientProfile } from "@/services/client/clients"
 import { useNavigate } from "react-router-dom"
 
 export default function OnboardingMain() {
+  const { user } = useSelector((state) => state.auth)
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
-    username: "",
+    full_name: user?.full_name || "", 
     phone: "",
     date_of_birth: "",
     gender: "",
@@ -22,6 +24,7 @@ export default function OnboardingMain() {
     diet_preference: "",
     daily_activity_level: "",
     medical_conditions: "",
+    profile_picture: user?.profile_picture || "",
   })
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)

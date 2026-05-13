@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { meRequest,refreshRequest } from "@/services/auth/auth";
 
 
-  //  THUNK (defined FIRST)
+  
 
 export const refreshSession = createAsyncThunk(
   "auth/refreshSession",
@@ -40,7 +40,7 @@ const initialState = {
 /* =======================
    SLICE
 ======================= */
-console.log("🟡 authSlice.jsx loaded");
+console.log("authSlice.jsx loaded");
 
 const authSlice = createSlice({
   name: "auth",
@@ -91,14 +91,12 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
-        state.error = action.payload || "Session refresh failed";
+        state.error = null;
       });
   },
 });
 
-/* =======================
-   EXPORTS (THIS ANSWERS YOUR QUESTION)
-======================= */
+
 export const {
   setUSer,
   clearUser,

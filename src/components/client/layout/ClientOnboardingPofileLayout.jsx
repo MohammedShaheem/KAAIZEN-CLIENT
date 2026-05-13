@@ -1,4 +1,8 @@
+
 import { ArrowRight, Upload, User } from "lucide-react"
+import { useRef } from "react"
+import { uploadToCloudinary } from "@/services/cloudinary/pdfUpload"
+import { useState } from "react"
 
 const STEPS = [
   { id: 1, label: "Personal Info" },
@@ -7,13 +11,41 @@ const STEPS = [
   { id: 4, label: "Lifestyle" },
 ]
 
-export default function ClientLayout({ currentStep = 1, children }) {
+export default function ClientLayout({ currentStep = 1, children, formData, updateFormData }) {
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState("")
+  const inputRef = useRef(null)
+
+  const handleImageUpload = async (file) => {
+    if (!file) return
+
+    const allowed = ["image/jpeg", "image/png", "image/webp"]
+    if (!allowed.includes(file.type)) {
+      setUploadError("Only JPG, PNG, or WebP images are allowed")
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("File size must be less than 5MB")
+      return
+    }
+
+    try {
+      setUploading(true)
+      setUploadError("")
+      const result = await uploadToCloudinary(file, "image")  
+      updateFormData?.({ profile_picture: result.secure_url })
+    } catch {
+      setUploadError("Upload failed, please try again")
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 overflow-hidden">
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-        {/* Left Column: Form Content */}
+        {/* Left Column */}
         <div className="max-w-md w-full mx-auto lg:mx-0">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
               "TELL US ABOUT <span className="text-purple-600">YOU"</span>
@@ -22,11 +54,7 @@ export default function ClientLayout({ currentStep = 1, children }) {
               Help us personalize your experience by filling out your basic details.
             </p>
           </div>
-
-          {/* Form Content */}
           <div className="mb-8">{children}</div>
-
-          {/* Progress Indicators */}
           <div className="flex gap-2 justify-center">
             {STEPS.map((step) => (
               <button
@@ -44,37 +72,67 @@ export default function ClientLayout({ currentStep = 1, children }) {
           </div>
         </div>
 
-        {/* Right Column: Image Section with Purple Circle */}
+        {/* Right Column: Clickable upload circle */}
         <div className="hidden lg:flex items-center justify-center relative h-96">
-          {/* Large Purple Circle Background */}
           <div className="absolute w-96 h-96 bg-purple-600 rounded-full opacity-20" />
 
-          {/* Profile Photo Upload Placeholder */}
           <div className="relative z-10 flex flex-col items-center justify-center">
-            <div className="relative w-80 h-80 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full flex items-center justify-center border-4 border-purple-200 shadow-lg">
-              {/* User Icon Placeholder */}
-              <div className="text-center">
-                <User className="w-32 h-32 text-purple-300 mx-auto mb-4" />
-                <p className="text-purple-600 font-semibold text-lg">Upload Photo</p>
-                <p className="text-purple-400 text-sm mt-1">JPG, PNG up to 5MB</p>
-              </div>
+            {/* Hidden file input */}
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => handleImageUpload(e.target.files[0])}
+            />
 
-              {/* Upload Indicator Badge */}
-              <div className="absolute bottom-6 right-6 bg-purple-600 rounded-full p-3 shadow-lg hover:bg-purple-700 transition-colors cursor-pointer">
+            <div
+              onClick={() => inputRef.current?.click()}
+              className="relative w-80 h-80 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full 
+                         flex items-center justify-center border-4 border-purple-200 shadow-lg 
+                         cursor-pointer hover:border-purple-400 transition-colors group"
+            >
+              {formData?.profile_picture ? (
+                // Show uploaded image
+                <img
+                  src={formData.profile_picture}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                // Show placeholder
+                <div className="text-center pointer-events-none">
+                  {uploading ? (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-12 h-12 border-4 border-purple-400 border-t-transparent rounded-full animate-spin" />
+                      <p className="text-purple-600 font-semibold">Uploading...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <User className="w-32 h-32 text-purple-300 mx-auto mb-4 group-hover:text-purple-400 transition-colors" />
+                      <p className="text-purple-600 font-semibold text-lg">Upload Photo</p>
+                      <p className="text-purple-400 text-sm mt-1">JPG, PNG up to 5MB</p>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Upload badge — shows a re-upload icon once image is set */}
+              <div className="absolute bottom-6 right-6 bg-purple-600 rounded-full p-3 shadow-lg hover:bg-purple-700 transition-colors">
                 <Upload className="w-6 h-6 text-white" />
               </div>
             </div>
+
+            {uploadError && (
+              <p className="mt-3 text-sm text-red-500 text-center max-w-xs">{uploadError}</p>
+            )}
+
+            {formData?.profile_picture && !uploading && (
+              <p className="mt-3 text-sm text-green-600 font-medium">✓ Photo uploaded</p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Skip Button */}
-      {/* <div className="absolute top-6 right-6">
-        <button className="flex items-center gap-2 px-6 py-3 border-2 border-teal-500 text-teal-600 font-semibold rounded-full hover:bg-teal-50 transition-colors">
-          SKIP
-          <ArrowRight className="w-5 h-5" />
-        </button>
-      </div> */}
     </div>
   )
 }

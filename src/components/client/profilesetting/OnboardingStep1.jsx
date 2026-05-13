@@ -5,14 +5,65 @@ import ClientSelect from "../common/ClientSelect"
 import ClientLayout from "../layout/ClientOnboardingPofileLayout"
 import { Gender } from "@/utils/choices"
 import * as Yup from "yup"
-import { fullNameRule, phoneRule, dobRule, genderRule } from "@/validators/common.schema"
+import { fullNameRule, phoneRule, genderRule } from "@/validators/common.schema"
 
+// ─── Local DOB rule (overrides the shared dobRule with full validation) ────────
+const dobRule = Yup.string()
+  .required("Date of birth is required")
+  .test("valid-date", "Please enter a valid date", (value) => {
+    if (!value) return false
+    const date = new Date(value)
+    return !isNaN(date.getTime())
+  })
+  .test("not-future", "Date of birth cannot be in the future", (value) => {
+    if (!value) return false
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return new Date(value) <= today
+  })
+  .test("min-age", "You must be at least 18 years old", (value) => {
+    if (!value) return false
+    const today = new Date()
+    const dob = new Date(value)
+    const age = today.getFullYear() - dob.getFullYear()
+    const hasHadBirthdayThisYear =
+      today.getMonth() > dob.getMonth() ||
+      (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate())
+    const actualAge = hasHadBirthdayThisYear ? age : age - 1
+    return actualAge >= 18
+  })
+  .test("max-age", "Please enter a valid date of birth", (value) => {
+    if (!value) return false
+    const today = new Date()
+    const dob = new Date(value)
+    const age = today.getFullYear() - dob.getFullYear()
+    return age <= 120
+  })
+
+// ─── Step 1 schema ─────────────────────────────────────────────────────────────
 const step1Schema = Yup.object().shape({
   full_name: fullNameRule,
   phone: phoneRule,
   date_of_birth: dobRule,
   gender: genderRule,
 })
+
+// ─── Max date helper: today's date as YYYY-MM-DD ───────────────────────────────
+const getTodayString = () => new Date().toISOString().split("T")[0]
+
+// ─── Min date helper: 120 years ago ───────────────────────────────────────────
+const getMinDateString = () => {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - 120)
+  return d.toISOString().split("T")[0]
+}
+
+// ─── Max date for 18+ rule: today minus 18 years ──────────────────────────────
+const getMax18DateString = () => {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - 18)
+  return d.toISOString().split("T")[0]
+}
 
 export default function OnboardingStep1({ formData, errors, updateFormData, onSubmit }) {
   const [localErrors, setLocalErrors] = useState({})
@@ -29,23 +80,25 @@ export default function OnboardingStep1({ formData, errors, updateFormData, onSu
     [updateFormData, localErrors],
   )
 
-  const validateField = useCallback(
-    async (name, value) => {
-      try {
-        await step1Schema.validateAt(name, { [name]: value })
-        setLocalErrors((prev) => ({ ...prev, [name]: "" }))
-      } catch (err) {
-        setLocalErrors((prev) => ({ ...prev, [name]: err.message }))
-      }
-    },
-    [step1Schema],
-  )
+  const validateField = useCallback(async (name, value) => {
+    try {
+      await step1Schema.validateAt(name, { [name]: value })
+      setLocalErrors((prev) => ({ ...prev, [name]: "" }))
+    } catch (err) {
+      setLocalErrors((prev) => ({ ...prev, [name]: err.message }))
+    }
+  }, [])
 
   const handleBlur = useCallback(
     (e) => {
       const { name, value } = e.target
       if (!touched[name]) {
         setTouched((prev) => ({ ...prev, [name]: true }))
+      }
+      // Always validate DOB on blur, even if empty, so "required" shows up
+      if (name === "date_of_birth") {
+        validateField(name, value)
+        return
       }
       if (value !== undefined && value !== null && value !== "") {
         validateField(name, value)
@@ -96,7 +149,9 @@ export default function OnboardingStep1({ formData, errors, updateFormData, onSu
   }
 
   return (
-    <ClientLayout currentStep={1}>
+    <ClientLayout currentStep={1} 
+        formData={formData}        
+        updateFormData={updateFormData} >
       <form onSubmit={handleSubmit} className="space-y-4">
         <ClientInput
           icon={User}
@@ -128,7 +183,9 @@ export default function OnboardingStep1({ formData, errors, updateFormData, onSu
           onChange={handleChange}
           onBlur={handleBlur}
           error={errors.date_of_birth || localErrors.date_of_birth}
-          max={new Date().toISOString().split("T")[0]}
+          // Browser-level guards (UX, not a security substitute for Yup)
+          min={getMinDateString()}   // blocks dates > 120 years ago in the picker
+          max={getMax18DateString()} // blocks dates within last 18 years in the picker
         />
         <ClientSelect
           icon={UserCheck}
