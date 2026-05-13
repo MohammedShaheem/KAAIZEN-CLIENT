@@ -91,7 +91,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
-        state.error = action.payload || "Session refresh failed";
+        state.error = null;
       });
   },
 });
